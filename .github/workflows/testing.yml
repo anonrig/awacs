@@ -11,7 +11,6 @@ on:
 jobs:
   integration:
     runs-on: ubuntu-latest
-    container: node:latest
 
     strategy:
       matrix:
@@ -25,7 +24,7 @@ jobs:
           POSTGRES_PASSWORD: postgres_password
           POSTGRES_PORT: 5432
           POSTGRES_USER: postgres_user
-          POSTGRES_HOST: postgres
+          POSTGRES_HOST: localhost
         ports:
           - 5432:5432
         options: >-
@@ -35,25 +34,25 @@ jobs:
           --health-retries 5
 
     steps:
+      - name: Install PostgreSQL client
+        run: |
+          sudo bash -c "echo deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main >> /etc/apt/sources.list.d/pgdg.list"
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get -yq install libpq-dev postgresql-client-13
+
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Install PostgreSQL client
+      - name: Prepare Database & Users
         run: |
-          apt-get update
-          apt-get install --yes postgresql-client
-
-      - name: Prepare DB
-        working-directory: db
-        run: |
-          psql < ./globals.sql
-          psql -1 tracking < ./schema/*.sql
+          psql < db/globals.sql
+          cat db/schema/*.sql | psql -1 tracking
         env:
           PGDATABASE: postgres_db
           PGPASSWORD: postgres_password
-          PGPORT: 5432
           PGUSER: postgres_user
-          PGHOST: postgres
+          PGHOST: localhost
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -65,9 +64,8 @@ jobs:
           npm ci
           npm test
         env:
-          NODE_ENV: production
-          PGPORT: 5432
-          PGHOST: postgres
           PGDATABASE: "tracking"
           PGUSER: "tracking-worker"
           PGPASSWORD: "tracking-password"
+          PGHOST: localhost
+

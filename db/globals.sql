@@ -1,4 +1,3 @@
-CREATE EXTENSION btree_gist;
 CREATE ROLE tracking;
 CREATE ROLE "tracking-worker" LOGIN PASSWORD 'tracking-password';
 
