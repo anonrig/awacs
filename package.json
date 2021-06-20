@@ -16,6 +16,12 @@
     "migrate:rollback": "knex migrate:rollback --knexfile=src/knexfile.js"
   },
   "author": "Yagiz Nizipli <yagiz@nizipli.com>",
+  "contributors": [
+    {
+      "name": "Emre Deger",
+      "email": "ben@emre.dev"
+    }
+  ],
   "dependencies": {
     "@grpc/grpc-js": "^1.3.2",
     "@grpc/proto-loader": "^0.6.2",
