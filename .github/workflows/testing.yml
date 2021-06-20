@@ -1,0 +1,73 @@
+name: Node Testing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    container: node:latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: postgres_db
+          POSTGRES_PASSWORD: postgres_password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres_user
+          POSTGRES_HOST: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Install PostgreSQL client
+        run: |
+          apt-get update
+          apt-get install --yes postgresql-client
+
+      - name: Prepare DB
+        working-directory: db
+        run: |
+          psql < ./globals.sql
+          psql -1 tracking < ./schema/*.sql
+        env:
+          PGDATABASE: postgres_db
+          PGPASSWORD: postgres_password
+          PGPORT: 5432
+          PGUSER: postgres_user
+          PGHOST: postgres
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+            node-version: ${{ matrix.node-version }}
+
+      - name: Installation & Tests
+        run: |
+          npm ci
+          npm test
+        env:
+          NODE_ENV: production
+          PGPORT: 5432
+          PGHOST: postgres
+          PGDATABASE: "tracking"
+          PGUSER: "tracking-worker"
+          PGPASSWORD: "tracking-password"
