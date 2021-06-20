@@ -1,4 +1,4 @@
-exports.up = function (knex) {
+export function up(knex) {
   return knex.schema.raw(`
     CREATE TYPE device_platforms AS ENUM ('android', 'ios');
 
@@ -55,7 +55,7 @@ exports.up = function (knex) {
 `)
 }
 
-exports.down = function (knex) {
+export function down(knex) {
   return knex.schema.raw(`
     DROP TABLE IF EXISTS clients;
 

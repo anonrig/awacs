@@ -20,10 +20,10 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_DB: postgres_db
-          POSTGRES_PASSWORD: postgres_password
+          POSTGRES_DB: tracking
+          POSTGRES_PASSWORD: tracking-password
           POSTGRES_PORT: 5432
-          POSTGRES_USER: postgres_user
+          POSTGRES_USER: postgres
           POSTGRES_HOST: localhost
         ports:
           - 5432:5432
@@ -51,6 +51,7 @@ jobs:
 
       - name: Prepare Database & Users
         run: |
+          npm ci
           npm run migrate
         env:
           PGDATABASE: tracking
@@ -58,18 +59,16 @@ jobs:
           PGUSER: postgres
           PGHOST: localhost
 
-      - name: Installation & Tests
+      - name: Tests
         run: |
-          npm ci
           npm run test:ci
         env:
-          PGDATABASE: "tracking"
-          PGUSER: "postgres"
-          PGPASSWORD: "tracking-password"
+          PGDATABASE: tracking
+          PGUSER: postgres
+          PGPASSWORD: tracking-password
           PGHOST: localhost
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-

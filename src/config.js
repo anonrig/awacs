@@ -7,8 +7,16 @@ export default {
     client: 'pg',
     version: '13',
     connection: {
-      database: 'tracking',
-      user: 'tracking-worker',
+      host: process.env.PGHOST || '0.0.0.0',
+      database: process.env.PGDATABASE || 'tracking',
+      user: process.env.PGUSER || 'postgres',
+      password: process.env.PGPASSWORD || '',
+      port: process.env.PGPORT ? parseInt(process.env.PGPORT) : 5432,
+    },
+    migrations: {
+      loadExtensions: ['.js'],
+      tableName: 'migrations',
+      directory: '../db/migrations',
     },
     useNullAsDefault: false,
     asyncStackTraces: true,

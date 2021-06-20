@@ -1,4 +1,4 @@
-exports.up = function (knex) {
+export function up(knex) {
   return knex.schema.raw(`
     CREATE TABLE sessions (
       account_id uuid NOT NULL,
@@ -24,6 +24,6 @@ exports.up = function (knex) {
  `)
 }
 
-exports.down = function (knex) {
-  return knex.schema.dropTable('sessions')
+export function down(knex) {
+  return knex.schema.dropTableIfExists('sessions')
 }
