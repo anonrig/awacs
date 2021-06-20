@@ -11,7 +11,9 @@
     "dev": "nodemon -r dotenv/config",
     "test": "c8 ava",
     "test:ci": "c8 --reporter=lcov ava",
-    "test:watch": "c8 ava --watch"
+    "test:watch": "c8 ava --watch",
+    "migrate": "knex migrate:latest --knexfile=src/knexfile.cjs",
+    "migrate:rollback": "knex migrate:rollback --knexfile=src/knexfile.cjs"
   },
   "author": "Yagiz Nizipli <yagiz@nizipli.com>",
   "dependencies": {
