@@ -5,10 +5,11 @@ module.exports = {
     connection: {
       database: 'tracking',
       user: 'postgres',
+      password: 'tracking-password',
     },
     migrations: {
+      extension: 'mjs',
       tableName: 'knex_migrations',
-      directory: '../db/migrations',
     },
   },
 
@@ -17,11 +18,11 @@ module.exports = {
     version: '13',
     connection: {
       database: 'tracking',
-      user: 'tracking-worker',
+      user: 'postgres',
+      password: 'tracking-password',
     },
     migrations: {
       tableName: 'knex_migrations',
-      directory: '../db/migrations',
     },
     pool: {
       min: 2,
@@ -34,11 +35,11 @@ module.exports = {
     version: '13',
     connection: {
       database: 'tracking',
-      user: 'tracking-worker',
+      user: 'postgres',
+      password: 'tracking-password',
     },
     migrations: {
       tableName: 'knex_migrations',
-      directory: '../db/migrations',
     },
     pool: {
       min: 2,

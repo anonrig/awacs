@@ -41,23 +41,22 @@ jobs:
           sudo apt-get update
           sudo apt-get -yq install libpq-dev postgresql-client-13
 
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+            node-version: ${{ matrix.node-version }}
+
       - name: Checkout project
         uses: actions/checkout@v2
 
       - name: Prepare Database & Users
         run: |
-          psql < db/globals.sql
-          cat db/schema/*.sql | psql -1 tracking
+          npm run migrate
         env:
-          PGDATABASE: postgres_db
-          PGPASSWORD: postgres_password
-          PGUSER: postgres_user
+          PGDATABASE: tracking
+          PGPASSWORD: tracking-password
+          PGUSER: postgres
           PGHOST: localhost
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-            node-version: ${{ matrix.node-version }}
 
       - name: Installation & Tests
         run: |
@@ -65,7 +64,7 @@ jobs:
           npm run test:ci
         env:
           PGDATABASE: "tracking"
-          PGUSER: "tracking-worker"
+          PGUSER: "postgres"
           PGPASSWORD: "tracking-password"
           PGHOST: localhost
 
