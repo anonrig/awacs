@@ -1,0 +1,73 @@
+replicaCount: 1
+
+image:
+  repository: "registry.gitlab.com/socketkit/awacs"
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets:
+  - name: "awacs-registry"
+nameOverride: "awacs"
+fullnameOverride: "awacs"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "awacs-account"
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 2000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 3002
+  grpcPort: 4001
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: awacs.socketkit.com
+      paths:
+      - path: /
+        backend:
+          serviceName: awacs
+          servicePort: 3002
+  tls:
+   - secretName: "awacs-tls"
+     hosts:
+       - awacs.socketkit.com
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+application:
+  secretName: "awacs-environment"

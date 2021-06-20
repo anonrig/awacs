@@ -1,0 +1,104 @@
+{
+  "name": "awacs",
+  "version": "0.1.0",
+  "description": "Next-gen behavior analysis server with built-in encryption supporting HTTP2 and gRPC. Node.js, headless, API-only, horizontally scaleable.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"{src,test}/**/*.js\"",
+    "lint:fix": "eslint \"{src,test}/**/*.js\" --fix",
+    "start": "node src/index.js",
+    "dev": "nodemon -r dotenv/config",
+    "test": "c8 ava",
+    "test:watch": "c8 ava --watch"
+  },
+  "author": "Yagiz Nizipli <yagiz@nizipli.com>",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.3.2",
+    "@grpc/proto-loader": "^0.6.2",
+    "@sentry/node": "^6.7.1",
+    "@sentry/tracing": "^6.7.1",
+    "ajv": "^8.6.0",
+    "consola": "^2.15.3",
+    "currency-codes": "^2.1.0",
+    "dayjs": "^1.10.5",
+    "fastify": "^3.18.0",
+    "fastify-auth": "^1.1.0",
+    "fastify-compress": "^3.6.0",
+    "fastify-cors": "^6.0.1",
+    "fastify-helmet": "^5.3.1",
+    "fastify-metrics": "^7.2.1",
+    "fastify-raw-body": "^3.1.0",
+    "fastify-sensible": "^3.1.1",
+    "fastify-swagger": "^4.7.0",
+    "knex": "^0.95.6",
+    "locale-code": "^2.0.2",
+    "mali": "^0.44.0",
+    "pg": "^8.6.0",
+    "pg-query-stream": "^4.1.0",
+    "semver": "^7.3.5",
+    "under-pressure": "^5.6.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/eslint-parser": "^7.14.5",
+    "@babel/plugin-syntax-top-level-await": "^7.14.5",
+    "ava": "^3.15.0",
+    "c8": "^7.7.3",
+    "dotenv": "^10.0.0",
+    "eslint": "^7.28.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-security": "^1.4.0",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.3.1",
+    "quibble": "^0.6.5"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:prettier/recommended",
+      "plugin:import/errors",
+      "plugin:import/warnings",
+      "plugin:security/recommended"
+    ],
+    "plugins": [
+      "prettier",
+      "import",
+      "security"
+    ],
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "modules": true
+      },
+      "ecmaVersion": 2021
+    },
+    "env": {
+      "node": true,
+      "es6": true
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "semi": false,
+    "tabWidth": 2
+  },
+  "ava": {
+    "files": [
+      "test/**/*.test.js"
+    ],
+    "failFast": true,
+    "environmentVariables": {
+      "CI": "true"
+    },
+    "nodeArguments": [
+      "--loader=quibble",
+      "--no-warnings",
+      "--require=dotenv/config"
+    ]
+  }
+}

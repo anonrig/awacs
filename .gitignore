@@ -1,0 +1,7 @@
+/node_modules/
+/build/
+/.env.development
+/.env
+/coverage/
+/.nyc_output
+/.nova
