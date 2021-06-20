@@ -56,5 +56,9 @@ exports.up = function (knex) {
 }
 
 exports.down = function (knex) {
-  return knex.schema.dropTable('clients')
+  return knex.schema.raw(`
+    DROP TABLE IF EXISTS clients;
+
+    DROP TYPE IF EXISTS device_platforms;
+  `)
 }

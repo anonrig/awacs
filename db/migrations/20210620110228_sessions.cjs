@@ -1,7 +1,5 @@
 exports.up = function (knex) {
   return knex.schema.raw(`
-    CREATE EXTENSION btree_gist;
-
     CREATE TABLE sessions (
       account_id uuid NOT NULL,
       application_id text NOT NULL,
