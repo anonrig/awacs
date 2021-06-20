@@ -62,10 +62,15 @@ jobs:
       - name: Installation & Tests
         run: |
           npm ci
-          npm test
+          npm run test:ci
         env:
           PGDATABASE: "tracking"
           PGUSER: "tracking-worker"
           PGPASSWORD: "tracking-password"
           PGHOST: localhost
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
