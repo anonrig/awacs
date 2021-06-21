@@ -4,3 +4,4 @@ coverage/
 k8s/
 .github/
 test/
+docs/

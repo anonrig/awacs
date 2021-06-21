@@ -6,3 +6,8 @@
 /.nyc_output
 /.nova
 yarn.lock
+
+docs/.docusaurus
+docs/build
+docs/node_modules
+docs/static/openapi.json
