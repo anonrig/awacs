@@ -1,5 +1,4 @@
 import grpcjs from '@grpc/grpc-js'
-import Sentry from '@sentry/node'
 import ajvCurrency from './validators/ajv-currency-code.js'
 import ajvSemver from './validators/ajv-semver.js'
 import ajvLocale from './validators/ajv-locale-code.js'
@@ -44,7 +43,6 @@ export async function build() {
           throw server.httpErrors.serviceUnavailable(error.message)
         default:
           logger.fatal(error)
-          Sentry.captureException(error)
           throw server.httpErrors.internalServerError('Something went wrong')
       }
     } else if (error.statusCode) {
@@ -56,7 +54,6 @@ export async function build() {
     } else {
       // Handle uncaught errors due to runtime issues
       logger.error(error)
-      Sentry.captureException(error)
       throw server.httpErrors.internalServerError('Something went wrong')
     }
   })
@@ -160,38 +157,6 @@ export async function build() {
       relation: 'and',
       run: 'all',
     })(req, res, next)
-  })
-
-  server.addHook('onError', (request, _, error, done) => {
-    Sentry.withScope((scope) => {
-      scope.setSpan(request.trace)
-      scope.setUser({
-        id: request.user.identity.id,
-        email: request.user.identity.recovery_addresses[0].value,
-      })
-      Sentry.captureException(error)
-    })
-    done()
-  })
-
-  server.addHook('onRequest', (request, _, done) => {
-    if (request.routerPath?.startsWith('/v1/')) {
-      request.trace = Sentry.startTransaction({
-        op: request.method,
-        name: request.routerPath,
-        trimEnd: true,
-      })
-    }
-
-    done()
-  })
-
-  server.addHook('onResponse', (request, _, done) => {
-    setImmediate(() => {
-      request.trace?.setHttpStatus(request.statusCode)
-      request.trace?.finish()
-    })
-    done()
   })
 
   server.register(routes, { prefix: '/v1' })
