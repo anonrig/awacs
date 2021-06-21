@@ -1,60 +1,87 @@
 replicaCount: 1
 
 image:
-  repository: "registry.gitlab.com/socketkit/awacs"
-  pullPolicy: Always
+  repository: socketkit/awacs
   tag: "latest"
+  pullPolicy: Always
 
-imagePullSecrets:
-  - name: "awacs-registry"
+imagePullSecrets: []
 nameOverride: "awacs"
 fullnameOverride: "awacs"
+
+application:
+  autoMigrate: true
+  config:
+    NODE_ENV: "production"
+    PGUSER: "postgres"
+    PGPASSWORD: "postgres-password"
+    PGDATABASE: "awacs"
+    PGHOST: "awacs-postgresql"
+
+postgresql:
+  enabled: true
+  postgresqlUsername: "postgres"
+  postgresqlPassword: "postgres-password"
+  postgresqlDatabase: "awacs"
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: "13.3.0-debian-10-r33"
+  networkPolicy:
+    enabled: false
+
+pgchecker:
+  image:
+    repository: docker.io/busybox
+    tag: 1.32
+    pullPolicy: IfNotPresent
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+  resources:
+    requests:
+      cpu: "10m"
+      memory: "16Mi"
+    limits:
+      cpu: "10m"
+      memory: "16Mi"
 
 serviceAccount:
   create: true
   annotations: {}
   name: "awacs-account"
 
-podAnnotations: {}
-
-podSecurityContext:
-  fsGroup: 2000
-
-securityContext:
-  capabilities:
-    drop:
-    - ALL
-  readOnlyRootFilesystem: true
-  runAsNonRoot: true
-  runAsUser: 1000
+job:
+  annotations: {}
+  automountServiceAccountToken: true
 
 service:
-  type: ClusterIP
-  port: 3002
-  grpcPort: 4001
+  public:
+    type: ClusterIP
+    port: 3002
+  private:
+    type: ClusterIP
+    port: 4001
 
 ingress:
-  enabled: false
+  enabled: true
   annotations: {}
   hosts:
     - host: awacs.socketkit.com
-      paths:
-      - path: /
-        backend:
-          serviceName: awacs
-          servicePort: 3002
-  tls:
-   - secretName: "awacs-tls"
-     hosts:
-       - awacs.socketkit.com
+  tls: []
+   # - secretName: "awacs-tls"
+   #   hosts:
+   #     - awacs.socketkit.com
 
 resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 50m
-    memory: 128Mi
+  limits: {}
+    # cpu: 200m
+    # memory: 256Mi
+  requests: {}
+    # cpu: 100m
+    # memory: 128Mi
 
 autoscaling:
   enabled: false
@@ -63,11 +90,17 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsUser: 1000
+  runAsNonRoot: true
+
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
-
-application:
-  secretName: "awacs-environment"

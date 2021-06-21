@@ -27,32 +27,49 @@ spec:
       serviceAccountName: {{ include "chart.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- if .Values.postgresql.enabled }}
+        - name: pgchecker
+          image: "{{ .Values.pgchecker.image.repository }}:{{ .Values.pgchecker.image.tag }}"
+          imagePullPolicy: {{ .Values.pgchecker.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.pgchecker.securityContext | nindent 12 }}
+          command:
+            - sh
+            - -c
+            - |
+              echo 'Waiting for PostgreSQL to become ready...'
+              until printf "." && nc -z -w 2 {{ include "chart.fullname" . }}-postgresql {{ .Values.postgresql.service.port }}; do
+                  sleep 2;
+              done;
+              echo 'PostgreSQL OK ✓'
+          resources:
+            {{- toYaml .Values.pgchecker.resources | nindent 12 }}
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.application.secretName }}
           envFrom:
           - secretRef:
-              name: {{ .Values.application.secretName }}
-          {{- end }}
+              name: {{ include "chart.fullname" . }}-secrets
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.service.public.port }}
               protocol: TCP
             - name: grpc
-              containerPort: {{ .Values.service.grpcPort }}
+              containerPort: {{ .Values.service.private.port }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /health
-              port: http
+              port: {{ .Values.service.public.port }}
           readinessProbe:
             httpGet:
               path: /health
-              port: http
+              port: {{ .Values.service.public.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
