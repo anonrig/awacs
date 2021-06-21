@@ -1,6 +1,7 @@
 replicaCount: 1
 
 image:
+  # -- default docker image
   repository: socketkit/awacs
   tag: "latest"
   pullPolicy: Always
@@ -10,6 +11,7 @@ nameOverride: "awacs"
 fullnameOverride: "awacs"
 
 application:
+  # -- default to true to run migration before every deployment
   autoMigrate: true
   config:
     NODE_ENV: "production"
@@ -19,7 +21,8 @@ application:
     PGHOST: "awacs-postgresql"
 
 postgresql:
-  enabled: true
+  # -- attaches a postgresql instance to deployment
+  enabled: false
   postgresqlUsername: "postgres"
   postgresqlPassword: "postgres-password"
   postgresqlDatabase: "awacs"
@@ -49,6 +52,7 @@ pgchecker:
       memory: "16Mi"
 
 serviceAccount:
+  # -- should create a service account
   create: true
   annotations: {}
   name: "awacs-account"
@@ -60,13 +64,16 @@ job:
 service:
   public:
     type: ClusterIP
+    # -- HTTP port
     port: 3002
   private:
     type: ClusterIP
+    # -- gRPC port
     port: 4001
 
 ingress:
-  enabled: true
+  # -- default to false to not expose public api, should be true for most cases
+  enabled: false
   annotations: {}
   hosts:
     - host: awacs.socketkit.com
