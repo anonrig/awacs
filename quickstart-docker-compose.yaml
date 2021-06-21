@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  awacs:
+    image: socketkit/awacs
+    restart: always
+    environment:
+      NODE_ENV: 'production'
+      PGDATABASE: 'awacs'
+      PGUSER: 'awacs-worker'
+      PGPASSWORD: 'MYSUPERSECRETKEY'
+      PGHOST: 'postgresql'
+      PORT: 3002
+      GRPC_PORT: 4001
+    ports:
+      - "3002:3002"
+      - "4001:4001"
+    depends_on:
+      - postgresql
+
+  postgresql:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: awacs
+      POSTGRES_USER: awacs-worker
+      POSTGRES_PASSWORD: MYSUPERSECRETKEY
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
