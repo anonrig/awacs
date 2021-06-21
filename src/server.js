@@ -74,20 +74,9 @@ export async function build() {
     routePrefix: '/docs',
     openapi: {
       info: {
-        title: 'Socketkit Tracking API',
-        description: 'Privacy oriented tracking API for Socketkit',
-        version: '0.1.0',
-        contact: {
-          name: 'Socketkit',
-          url: 'https://socketkit.com',
-          email: 'support@socketkit.com',
-        },
+        title: 'Awacs',
+        description: 'Next-gen user behavior analysis server',
       },
-      servers: [
-        {
-          url: 'https://tracking.socketkit.com',
-        },
-      ],
       tags: Object.keys(EventTypes)
         .map((k) => ({
           name: EventTypes[k].title, // eslint-disable-line
