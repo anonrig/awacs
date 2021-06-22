@@ -40,18 +40,16 @@ app.use(async (context, next) => {
   performance.mark(context.fullName)
 
   function measure() {
-    performance.mark(context.fullName + '-ended')
+    performance.mark(`${context.fullName}-ended`)
     performance.measure(
       context.fullName,
       context.fullName,
-      context.fullName + '-ended',
+      `${context.fullName}-ended`,
     )
   }
 
   return next()
-    .then(() => {
-      measure()
-    })
+    .then(() => measure())
     .catch((error) => {
       logger.fatal(error)
       measure()
