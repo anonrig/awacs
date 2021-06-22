@@ -137,17 +137,7 @@ export async function build() {
 
   server.register(sensible, { errorHandler: false })
   server.register(compress)
-  server.register(helmet, (instance) => ({
-    contentSecurityPolicy: {
-      directives: {
-        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        'form-action': ["'self'"],
-        'img-src': ["'self'", 'data:', 'validator.swagger.io'],
-        'script-src': ["'self'"].concat(instance.swaggerCSP.script),
-        'style-src': ["'self'", 'https:'].concat(instance.swaggerCSP.style),
-      },
-    },
-  }))
+  server.register(helmet)
 
   server.addHook('preHandler', (req, res, next) => {
     if (!req.routerPath?.startsWith('/v1/')) {
