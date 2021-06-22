@@ -50,15 +50,12 @@ export function up(knex) {
       CONSTRAINT opt_out_validity
         CHECK (NOT is_opt_out OR additional_properties != '{}'),
         
-      CHECK (country_id ~ '\A[a-z]{2}\Z')
+      CHECK (country_id ~ '\\A[a-z]{2}\\Z')
     );
 `)
 }
 
-export function down(knex) {
-  return knex.schema.raw(`
-    DROP TABLE IF EXISTS clients;
-
-    DROP TYPE IF EXISTS device_platforms;
-  `)
+export async function down(knex) {
+  await knex.schema.dropTableIfExists('clients')
+  await knex.schema.raw('DROP TYPE IF EXISTS device_platforms;')
 }
