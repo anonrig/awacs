@@ -48,7 +48,7 @@ export async function findOrCreate(
       client_id,
       started_at: dayjs(timestamp).toDate(),
       expired_at: dayjs(timestamp)
-        .add(session_timeout ?? 30, 'minutes')
+        .add(application.session_timeout ?? 30, 'minutes')
         .toDate(),
     })
     .into('sessions')
