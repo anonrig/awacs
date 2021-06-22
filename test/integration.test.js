@@ -58,9 +58,10 @@ test.after.always(async (t) => {
   await t.context.private_server.close()
 })
 
-test('should send an event', async (t) => {
+test('public api should accept first_app_open requests', async (t) => {
   const client_id = v4()
-  const { application } = t.context
+  const Events = promisifyAll(t.context.clients.Events)
+  const { application, account_id } = t.context
   const payload = [{ name: 'app_open', timestamp: Date.now(), ...app_open }]
 
   const { build } = await import('../src/server.js')
@@ -81,4 +82,17 @@ test('should send an event', async (t) => {
 
   t.deepEqual(JSON.parse(body), {})
   t.is(statusCode, 200)
+
+  const events = await Events.findAll({
+    account_id,
+    application_id: application.application_id,
+  })
+
+  t.falsy(events.cursor)
+  t.truthy(events.rows)
+  t.is(events.rows.length, 1)
+  t.is(events.rows[0].account_id, account_id)
+  t.is(events.rows[0].application_id, application.application_id)
+  t.is(events.rows[0].title, 'first_app_open')
+  t.is(events.rows[0].client_id, client_id)
 })
