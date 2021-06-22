@@ -12,7 +12,9 @@ export async function findAll(ctx) {
   }
 
   ctx.res = await Events.findAll(ctx.req, {
-    limit,
+    // by default grpc gives 0 to null int32 values
+    // in order to solve this, we check if internally.
+    limit: limit === 0 ? 100 : limit,
     cursor,
     start_date,
     end_date,

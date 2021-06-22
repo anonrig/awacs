@@ -33,7 +33,7 @@ export function create(
 
 export async function findAll(
   { account_id, application_id, client_id },
-  { limit = 100, cursor, start_date, end_date },
+  { limit, cursor, start_date, end_date },
 ) {
   const rows = await pg
     .queryBuilder()
@@ -79,6 +79,8 @@ export async function findAll(
       })),
     })),
     cursor:
-      rows.length > 0 ? { created_at: rows[rows.length - 1].created_at } : null,
+      rows.length === limit
+        ? { created_at: rows[rows.length - 1].created_at }
+        : null,
   }
 }
