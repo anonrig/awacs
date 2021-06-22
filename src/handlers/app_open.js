@@ -1,5 +1,4 @@
 import semver from 'semver'
-import dayjs from 'dayjs'
 import * as Clients from '../pg/client.js'
 import * as Events from '../pg/event.js'
 import * as Sessions from '../pg/session.js'
