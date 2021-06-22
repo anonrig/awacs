@@ -11,13 +11,26 @@ export function findOne({ account_id, application_id, client_id }, trx) {
     .first()
 }
 
-export function create(payload, trx) {
-  return pg
+export async function create(payload, trx) {
+  const { account_id, application_id, client_id } = payload
+
+  await pg
     .queryBuilder()
     .insert(payload)
     .into('clients')
     .transacting(trx)
-    .returning('*')
+    .onConflict(['account_id', 'application_id', 'client_id'])
+    .ignore()
+
+  // TODO: returning('*') does not work in knexjs using with
+  // onConflict and ignore. Fix this later.
+  return pg
+    .queryBuilder()
+    .select('*')
+    .from('clients')
+    .where({ account_id, application_id, client_id })
+    .transacting(trx)
+    .first()
 }
 
 export function update(client, trx) {
