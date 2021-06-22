@@ -16,8 +16,9 @@ export async function validateAccess(request, reply) {
   const authorization_key = request.headers['x-socketkit-key']
   const client_id = request.headers['x-client-id']
 
+  // TODO: validate base64 type of authorization_key
   const application = await getByAuthorization({
-    authorization_key,
+    authorization_key: Buffer.from(authorization_key, 'base64'),
   })
 
   if (!application) {
