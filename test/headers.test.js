@@ -2,6 +2,7 @@ import test from 'ava'
 import { v4 } from 'uuid'
 import quibble from 'quibble'
 import { generateKeyPairSync } from 'crypto'
+import * as Signing from '../src/signing.js'
 import {
   mockApplicationGetByAuthorization,
   mockCustomEventHandler,
@@ -82,8 +83,7 @@ test.serial(
     const defaults = {
       account_id: v4(),
       application_id: v4(),
-      application_key: publicKey.export({ format: 'der', type: 'spki' }),
-      server_key: privateKey.export({ format: 'der', type: 'pkcs8' }),
+      ...(await Signing.generateSigningKeys()),
     }
     await mockApplicationGetByAuthorization(defaults)
     await mockCustomEventHandler(null)
@@ -99,7 +99,7 @@ test.serial(
         'x-socketkit-key': v4(),
         'x-client-id': v4(),
         'x-signature':
-          'L+ObHL8qa75PIarUPKS65RHPLRSqeTFg30aC/V0r8k+G3hJxyXJfcAiFb3XEQRVN31x2tkhyMbYjcguEYpiLDQ==',
+          'QqlYhRftVv2RIjYyki4agRZ/lzoFF9IGhytjEFl736ZKiO3Oijw/eDFp0gKN9f9fflSz3gnz0vyq60QtM0gJBQ==',
       },
     })
     const response = JSON.parse(body)

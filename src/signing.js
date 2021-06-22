@@ -1,24 +1,45 @@
-import { verify, generateKeyPairSync } from 'crypto'
+import Crypto from 'crypto'
 
-export async function validate(rawBody, bufferServerKey, signature) {
-  const prefix = '-----BEGIN PRIVATE KEY-----\n'
-  const postfix = '-----END PRIVATE KEY-----'
+export async function validate(body, server_key, signature) {
+  if (!Buffer.isBuffer(server_key)) {
+    throw new Error('Server key is not a buffer')
+  }
 
-  return verify(
+  if (typeof body !== 'string') {
+    throw new Error(`Sign body is not a string`)
+  }
+
+  const prefix = '-----BEGIN PUBLIC KEY-----\n'
+  const postfix = '-----END PUBLIC KEY-----'
+  return Crypto.verify(
     null,
-    Buffer.from(rawBody, 'utf-8'),
+    Buffer.from(body),
     prefix +
-      bufferServerKey
+      server_key
         .toString('base64')
         .match(/.{0,64}/g)
         .join('\n') +
       postfix,
-    Buffer.from(signature, 'base64'),
+    Buffer.isBuffer(signature) ? signature : Buffer.from(signature, 'base64'),
   )
 }
 
+export async function sign(body, application_key) {
+  if (!Buffer.isBuffer(application_key)) {
+    throw new Error('Application key is not a buffer')
+  }
+
+  if (typeof body !== 'string') {
+    throw new Error(`Sign body is not a string`)
+  }
+
+  const encoded = application_key.toString('base64')
+  const der = `-----BEGIN PRIVATE KEY-----\n${encoded}\n-----END PRIVATE KEY-----`
+  return Crypto.sign(null, Buffer.from(body), der).toString('base64')
+}
+
 export async function generateSigningKeys() {
-  const { publicKey, privateKey } = generateKeyPairSync('ed25519')
+  const { publicKey, privateKey } = Crypto.generateKeyPairSync('ed25519')
   return {
     server_key: publicKey.export({ format: 'der', type: 'spki' }),
     application_key: privateKey.export({ format: 'der', type: 'pkcs8' }),
