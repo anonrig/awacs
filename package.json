@@ -13,7 +13,9 @@
     "test:ci": "c8 --reporter=lcov ava",
     "test:watch": "c8 ava --watch",
     "migrate": "knex migrate:latest --knexfile=src/knexfile.js",
-    "migrate:rollback": "knex migrate:rollback --knexfile=src/knexfile.js"
+    "migrate:dev": "node -r dotenv/config node_modules/knex/bin/cli migrate:latest --knexfile=src/knexfile.js",
+    "migrate:rollback": "knex migrate:rollback --knexfile=src/knexfile.js",
+    "migrate:rollback:dev": "node -r dotenv/config node_modules/knex/bin/cli migrate:rollback --knexfile=src/knexfile.js"
   },
   "author": "Yagiz Nizipli <yagiz@nizipli.com>",
   "contributors": [
