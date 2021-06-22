@@ -21,17 +21,12 @@ export function create(payload, trx) {
 }
 
 export function update(client, trx) {
-  const primary_keys = new Map([
-    ['account_id', 'application_id', 'client_id'].map((key) => [
-      key,
-      client.key,
-    ]),
-  ])
+  const { account_id, application_id, client_id, ...properties } = client
 
   return pg
     .queryBuilder()
-    .update(client)
+    .update(properties)
     .from('clients')
-    .where(primary_keys)
+    .where({ account_id, application_id, client_id })
     .transacting(trx)
 }
