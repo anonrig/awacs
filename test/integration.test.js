@@ -4,7 +4,6 @@ import { v4 } from 'uuid'
 import * as Signing from '../src/signing.js'
 import { getRandomPort, getGrpcClients, promisifyAll } from './helper.js'
 import private_server from '../src/grpc.js'
-import logger from '../src/logger.js'
 
 const app_open = {
   locale: 'en-US',
@@ -22,8 +21,6 @@ const app_open = {
 }
 
 test.before(async (t) => {
-  logger.pause()
-
   const account_id = v4()
   const application_id = v4()
   const port = getRandomPort()

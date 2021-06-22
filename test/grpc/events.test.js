@@ -2,10 +2,8 @@ import test from 'ava'
 import { v4 } from 'uuid'
 import { getRandomPort, getGrpcClients } from '../helper.js'
 import server from '../../src/grpc.js'
-import logger from '../../src/logger.js'
 
 test.before(async (t) => {
-  logger.pause()
   t.context.server = server
   const port = getRandomPort()
   await server.start(`0.0.0.0:${port}`)
