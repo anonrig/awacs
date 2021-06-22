@@ -10,6 +10,7 @@ service Applications {
 
 service Clients {
   rpc findAll(FindAllClientsRequest) returns (ClientsResponse) {}
+  rpc findOne(ClientIdRequest) returns (ClientResponse) {}
 }
 
 service Events {
@@ -40,6 +41,12 @@ message ApplicationRequest {
   string application_id = 2;
   string title = 3;
   int32 session_timeout = 4;
+}
+
+message ClientIdRequest {
+  string account_id = 1;
+  string application_id = 2;
+  string client_id = 3;
 }
 
 message FindAllClientsRequest {
@@ -78,6 +85,10 @@ message ApplicationsResponse {
 message ClientsResponse {
   repeated Client rows = 1;
   optional ClientCursor cursor = 2;
+}
+
+message ClientResponse {
+  Client row = 1;
 }
 
 message EventsResponse {

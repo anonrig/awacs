@@ -10,10 +10,13 @@ export async function handleAppOpen(
   fields,
 ) {
   return pg.transaction(async (trx) => {
-    let client = await Clients.findOne(
-      { account_id, application_id, client_id },
-      trx,
-    )
+    let client = await Clients.findOne({
+      account_id,
+      application_id,
+      client_id,
+    })
+      .forUpdate()
+      .transacting(trx)
 
     if (!client) {
       // Create client

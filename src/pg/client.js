@@ -1,13 +1,11 @@
 import pg from './index.js'
 
-export function findOne({ account_id, application_id, client_id }, trx) {
+export function findOne({ account_id, application_id, client_id }) {
   return pg
     .queryBuilder()
     .select('*')
     .from('clients')
     .where({ account_id, client_id, application_id })
-    .transacting(trx)
-    .forUpdate()
     .first()
 }
 

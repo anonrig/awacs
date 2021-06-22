@@ -16,3 +16,31 @@ export async function findAll(ctx) {
     cursor,
   })
 }
+
+export async function findOne(ctx) {
+  const { account_id, application_id, client_id } = ctx.req
+
+  if (!validate(account_id)) {
+    const error = new Error('Invalid account_id')
+    error.code = grpc.status.FAILED_PRECONDITION
+    throw error
+  }
+
+  const row = await Clients.findOne({ account_id, application_id, client_id })
+
+  if (row) {
+    ctx.res = {
+      row: {
+        ...row,
+        additional_properties: Object.entries(row.additional_properties).map(
+          ([key, value]) => ({
+            key,
+            value,
+          }),
+        ),
+      },
+    }
+  } else {
+    ctx.res = { row: null }
+  }
+}

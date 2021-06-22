@@ -70,12 +70,11 @@ test('should find all clients', async (t) => {
   await sendEventRequest()
   await sendEventRequest()
 
-  const response = await Clients.findAll({ account_id })
+  const response = await Clients.findAll({ account_id, application_id })
   t.truthy(response.rows)
-  t.is(response.rows.length, 1)
+  t.is(response.rows.length, 2)
   t.is(response.rows[0].application_id, application_id)
   t.is(response.rows[0].account_id, account_id)
-  t.is(response.rows[0].client_id, client_id)
 })
 
 test.cb('findAll should check for valid account_id', (t) => {
@@ -89,4 +88,44 @@ test.cb('findAll should check for valid account_id', (t) => {
     t.falsy(response)
     t.end()
   })
+})
+
+test('should find a single client', async (t) => {
+  const Clients = promisifyAll(t.context.clients.Clients)
+  const payload = [{ name: 'app_open', timestamp: Date.now(), ...app_open }]
+  const { account_id, application_id, application } = t.context
+  const client_id = v4()
+
+  async function sendEventRequest() {
+    const { build } = await import('../../src/server.js')
+    const server = await build()
+    const { body, statusCode } = await server.inject({
+      method: 'POST',
+      url: '/v1/events',
+      headers: {
+        'x-socketkit-key': application.authorization_key.toString('base64'),
+        'x-client-id': client_id,
+        'x-signature': await Signing.sign(
+          JSON.stringify(payload),
+          application.application_key,
+        ),
+      },
+      payload,
+    })
+
+    t.deepEqual(JSON.parse(body), {})
+    t.is(statusCode, 200)
+  }
+
+  await sendEventRequest()
+
+  const response = await Clients.findOne({
+    account_id,
+    application_id,
+    client_id,
+  })
+  t.truthy(response.row)
+  t.is(response.row.application_id, application_id)
+  t.is(response.row.account_id, account_id)
+  t.is(response.row.client_id, client_id)
 })
