@@ -3,7 +3,9 @@ import path from 'path'
 import { PerformanceObserver, performance } from 'perf_hooks'
 
 import * as Applications from './consumers/applications.js'
+import * as Clients from './consumers/clients.js'
 import * as Events from './consumers/events.js'
+import * as Sessions from './consumers/sessions.js'
 import Logger from './logger.js'
 
 const logger = Logger.create().withScope('grpc')
@@ -27,7 +29,7 @@ performanceObserver.observe({ entryTypes: ['measure'], buffered: true })
 
 const app = new Mali()
 
-app.addService(file, ['Applications', 'Events'], options)
+app.addService(file, ['Applications', 'Clients', 'Events', 'Sessions'], options)
 app.addService(health, 'Health', options)
 
 app.use(async (context, next) => {
@@ -51,17 +53,18 @@ app.use(async (context, next) => {
   return next()
     .then(() => measure())
     .catch((error) => {
-      logger.fatal(error)
       measure()
       throw error
     })
 })
 
-app.use({ Applications, Events })
+app.use({ Applications, Clients, Events, Sessions })
 app.use('grpc.health.v1.Health', 'Check', (ctx) => (ctx.res = { status: 1 }))
 
 app.on('error', (error) => {
-  logger.fatal(error)
+  if (!error.code) {
+    logger.fatal(error)
+  }
 })
 
 export default app

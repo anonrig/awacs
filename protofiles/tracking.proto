@@ -8,8 +8,16 @@ service Applications {
   rpc destroy (ApplicationIdRequest) returns (Empty) {}
 }
 
+service Clients {
+  rpc findAll(FindAllClientsRequest) returns (ClientsResponse) {}
+}
+
 service Events {
   rpc findAll(FindAllEventsRequest) returns (EventsResponse) {}
+}
+
+service Sessions {
+  rpc findAll(FindAllSessionsRequest) returns (SessionsResponse) {}
 }
 
 // Generics
@@ -34,12 +42,27 @@ message ApplicationRequest {
   int32 session_timeout = 4;
 }
 
+message FindAllClientsRequest {
+  string account_id = 1;
+  optional int32 limit = 2;
+  optional string application_id = 3;
+  optional ClientCursor cursor = 4;
+}
+
 message FindAllEventsRequest {
   string account_id = 1;
   optional int32 limit = 2;
   optional string application_id = 3;
   optional string client_id = 4;
   optional EventCursor cursor = 5;
+}
+
+message FindAllSessionsRequest {
+  string account_id = 1;
+  optional int32 limit = 2;
+  optional string application_id = 3;
+  optional string client_id = 4;
+  optional SessionCursor cursor = 5;
 }
 
 // Responses
@@ -52,9 +75,19 @@ message ApplicationsResponse {
   repeated Application rows = 1;
 }
 
+message ClientsResponse {
+  repeated Client rows = 1;
+  optional ClientCursor cursor = 2;
+}
+
 message EventsResponse {
   repeated Event rows = 1;
   optional EventCursor cursor = 2;
+}
+
+message SessionsResponse {
+  repeated Session rows = 1;
+  optional SessionCursor cursor = 2;
 }
 
 // Model definitions
@@ -72,21 +105,65 @@ message Application {
   string updated_at = 10;
 }
 
+message Client {
+  string account_id = 1;
+  string application_id = 2;
+  string client_id = 3;
+  optional string distinct_id = 4;
+  string country_id = 5;
+  string device_locale = 6;
+  string device_manufacturer = 7;
+  string device_platform = 8;
+  string device_type = 9;
+  int32 device_height = 10;
+  int32 device_width = 11;
+  optional string device_carrier = 12;
+  string os_name = 13;
+  optional string watch_model = 14;
+  int32 application_build_number = 15;
+  string application_version = 16;
+  string library_version = 17;
+  optional string push_token = 18;
+  bool is_push_token_valid = 19;
+  bool is_opt_out = 20;
+  repeated CustomProperties additional_properties = 21;
+  string created_at = 22;
+  string updated_at = 23;
+}
+
 message Event {
   string account_id = 1;
   string application_id = 2;
   string client_id = 3;
   string title = 4;
-  repeated EventProperties properties = 5;
+  repeated CustomProperties properties = 5;
   string session_started_at = 6;
   string created_at = 7;
 }
 
-message EventProperties {
+message CustomProperties {
   string key = 1;
   string value = 2;
 }
 
+message Session {
+  string account_id = 1;
+  string application_id = 2;
+  string client_id = 3;
+  string started_at = 4;
+  string expired_at = 5;
+}
+
+// Cursors
+
 message EventCursor {
   string created_at = 1;
+}
+
+message SessionCursor {
+  string expired_at = 1;
+}
+
+message ClientCursor {
+  string created_at = 2;
 }

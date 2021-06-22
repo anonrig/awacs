@@ -57,3 +57,43 @@ export async function findOrCreate(
 
   return new_session
 }
+
+export async function findAll(
+  { account_id, application_id, client_id },
+  { limit, cursor },
+) {
+  const rows = await pg
+    .queryBuilder()
+    .select('*')
+    .from('sessions')
+    .where({ account_id })
+    .andWhere(function () {
+      if (application_id) {
+        this.where({ application_id })
+      }
+
+      if (client_id) {
+        this.where({ client_id })
+      }
+
+      if (cursor) {
+        const { expired_at } = cursor
+
+        if (!expired_at) {
+          throw new Error(`Invalid cursor for pagination`)
+        }
+
+        this.where('expired_at', '<', expired_at)
+      }
+    })
+    .limit(limit)
+    .orderBy('expired_at', 'desc')
+
+  return {
+    rows,
+    cursor:
+      rows.length === limit
+        ? { expired_at: rows[rows.length - 1].expired_at }
+        : null,
+  }
+}

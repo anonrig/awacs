@@ -45,12 +45,15 @@ export function getGrpcClients(port = config.grpc_port) {
     oneofs: true,
   }
 
-  const { Applications, Events } = grpc.loadPackageDefinition(
-    loader.loadSync(path.join('.', 'protofiles/tracking.proto'), defaults),
-  )
+  const { Applications, Clients, Events, Sessions } =
+    grpc.loadPackageDefinition(
+      loader.loadSync(path.join('.', 'protofiles/tracking.proto'), defaults),
+    )
 
   return {
     Applications: new Applications(url, grpc.credentials.createInsecure()),
+    Clients: new Clients(url, grpc.credentials.createInsecure()),
     Events: new Events(url, grpc.credentials.createInsecure()),
+    Sessions: new Sessions(url, grpc.credentials.createInsecure()),
   }
 }
