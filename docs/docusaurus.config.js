@@ -28,6 +28,12 @@ module.exports = {
           position: 'left',
         },
         {
+          to: 'proto/awacs.proto',
+          activeBasePath: 'proto',
+          label: 'API Reference',
+          position: 'left',
+        },
+        {
           href: 'https://github.com/socketkit/awacs',
           label: 'GitHub',
           position: 'right',
@@ -51,9 +57,9 @@ module.exports = {
         blog: false,
         docs: {
           path: 'docs',
+          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: `https://github.com/socketkit/awacs/edit/main/docs`,
-          routeBasePath: '/',
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
           disableVersioning: false,
@@ -61,5 +67,15 @@ module.exports = {
       },
     ],
   ],
-  plugins: [],
+  plugins: [
+    [
+      'docusaurus-protobuffet-plugin',
+      {
+        routeBasePath: '/',
+        fileDescriptorsPath: './static/proto_workspace.json',
+        protoDocsPath: './docs/proto',
+        sidebarPath: './sidebars-protodoc.js',
+      },
+    ],
+  ],
 }

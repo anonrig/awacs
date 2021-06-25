@@ -1,4 +1,16 @@
+const protodoc = require('./sidebars-protodoc.js')
+
 module.exports = {
+  proto: [
+    {
+      type: 'category',
+      label: 'Definitions',
+      items: [
+        { type: 'doc', id: 'proto/health.proto' },
+        { type: 'doc', id: 'proto/awacs.proto' },
+      ],
+    },
+  ],
   docs: [
     {
       type: 'category',
