@@ -32,6 +32,7 @@ jobs:
 
       - name: "Generate Proto JSON"
         run: |
+          go get -u github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc
           protoc --doc_out=./docs/static --doc_opt=json,proto_workspace.json --proto_path=protofiles protofiles/**/*.proto
 
       - name: "Generate Proto Markdown"
