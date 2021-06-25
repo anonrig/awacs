@@ -29,9 +29,8 @@ jobs:
           go-version: ${{ matrix.go-version }}
 
       - name: "Generate Proto JSON"
-        working-directory: "docs"
         run: |
-          protoc --doc_out=./static/fixtures --doc_opt=json,proto_workspace.json --proto_path=../protofiles ../protofiles/**/*.proto
+          protoc --doc_out=./docs/static --doc_opt=json,proto_workspace.json --proto_path=./protofiles ./protofiles/**/*.proto
 
       - name: "Generate Proto Markdown"
         working-directory: "docs"
