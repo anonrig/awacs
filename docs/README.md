@@ -1,8 +1,8 @@
 ## Documentation
 
 Requirements are:
-- Protoc
-  - `brew install protoc`
+- Protobuf
+  - `brew install protobuf`
 - Go
   - `brew install go`
 - Protoc-doc-gen
