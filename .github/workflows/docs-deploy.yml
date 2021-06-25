@@ -1,0 +1,54 @@
+name: "Docs Deploy"
+
+on:
+  release:
+    types:
+      - published
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  vercel: 
+    runs-on: ubuntu-latest
+    name: "Deploy documentation"
+    
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: "Install Protoc"
+        uses: arduino/setup-protoc@v1
+
+      - name: "Install Go"
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: "Generate Proto JSON"
+        working-directory: "docs"
+        run: |
+          protoc --doc_out=./static/fixtures --doc_opt=json,proto_workspace.json --proto_path=../protofiles ../protofiles/**/*.proto
+
+      - name: "Generate Proto Markdown"
+        working-directory: "docs"
+        run: |
+          npx docusaurus generate-proto-docs
+
+      - name: "Build"
+        working-directory: "docs"
+        run: |
+          npm ci
+          npm run build
+
+      - name: "Deploy to Vercel"
+        working-directory: "docs/build"
+        run: |
+          npx vercel --token ${VERCEL_TOKEN} --prod
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
