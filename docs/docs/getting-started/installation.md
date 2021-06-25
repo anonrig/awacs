@@ -8,7 +8,7 @@ Awacs' only dependency is PostgreSQL. Even though our underlying technology enab
 
 ## Docker
 
-We recommend using Docker to run Awacs. For more configuration and flexibility dive into [configuration](/docs/getting-started/configuration).
+We recommend using Docker to run Awacs. For more configuration and flexibility dive into [configuration](/getting-started/configuration).
 
 ```shell
 $ docker pull socketkit/awacs:latest
@@ -55,4 +55,4 @@ services:
 
 ### Helm
 
-Awacs has an official Helm chart. Please refer to the [Helm documentation](/docs/guides/deployment/helm) for more information.
+Awacs has an official Helm chart. Please refer to the [Helm documentation](/guides/deployment/helm) for more information.
