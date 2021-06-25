@@ -19,7 +19,7 @@ $ npm install
 - **Generate Proto JSON definitions**
 
 ```bash
-$ protoc --doc_out=./static/fixtures --doc_opt=json,proto_workspace.json --proto_path=../protofiles ../protofiles/**/*.proto
+$ protoc --doc_out=./static --doc_opt=json,proto_workspace.json --proto_path=../protofiles ../protofiles/**/*.proto
 ```
 
 - **Generate Proto Markdown**
