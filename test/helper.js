@@ -47,7 +47,7 @@ export function getGrpcClients(port = config.grpc_port) {
 
   const { Applications, Clients, Events, Sessions } =
     grpc.loadPackageDefinition(
-      loader.loadSync(path.join('.', 'protofiles/tracking.proto'), defaults),
+      loader.loadSync(path.join('.', 'protofiles/awacs.proto'), defaults),
     )
 
   return {
