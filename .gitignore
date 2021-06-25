@@ -16,3 +16,4 @@ docs/static/openapi.json
 docs/sidebars-protodoc.js
 docs/static/proto_workspace.json
 docs/docs/proto
+docs/.vercel
