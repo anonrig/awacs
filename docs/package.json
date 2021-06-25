@@ -4,7 +4,6 @@
   "scripts": {
     "generate": "CI=true node scripts/generate.js",
     "docusaurus": "docusaurus",
-    "postinstall": "npm run generate",
     "start": "docusaurus start",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
@@ -13,6 +12,7 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
+    "scripts-generate": "CI=true node scripts/generate.js",
     "generate-proto-ws": "protoc --doc_out=./static --doc_opt=json,proto_workspace.json --proto_path=../protofiles ../protofiles/**/*.proto",
     "generate-proto-docs": "npx docusaurus generate-proto-docs"
   },

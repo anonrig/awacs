@@ -8,4 +8,4 @@
 
 ## Documentation
 
-Public API [documentation](https://docs.socketkit.com).
+Public API [documentation](https://awacs.socketkit.com).

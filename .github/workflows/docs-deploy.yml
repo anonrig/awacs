@@ -1,4 +1,4 @@
-name: "Docs Deploy"
+name: "Docs"
 
 on:
   release:
@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - dev
-  workflow_dispatch:
+      - main
 
 jobs:
   vercel: 
@@ -28,26 +28,25 @@ jobs:
       - name: "Install Go"
         uses: actions/setup-go@v2
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: '1.16.x'
+
+      - name: "Install protoc-gen-doc"
+        run: |
+          go get -u github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc
 
       - name: "Generate Proto JSON"
         run: |
-          go get -u github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc
-          protoc --doc_out=./docs/static --doc_opt=json,proto_workspace.json --proto_path=protofiles protofiles/**/*.proto
+          protoc --doc_out=$GITHUB_WORKSPACE/docs/static --doc_opt=json,proto_workspace.json --proto_path=$GITHUB_WORKSPACE/protofiles $GITHUB_WORKSPACE/protofiles/awacs.proto
 
       - name: "Generate Proto Markdown"
         working-directory: "docs"
         run: |
+          npm ci
+          npm run scripts-generate
           npx docusaurus generate-proto-docs
 
-      - name: "Build"
-        working-directory: "docs"
-        run: |
-          npm ci
-          npm run build
-
       - name: "Deploy to Vercel"
-        working-directory: "docs/build"
+        working-directory: "docs"
         run: |
           npx vercel --token ${VERCEL_TOKEN} --prod
         env:

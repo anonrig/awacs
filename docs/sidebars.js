@@ -5,10 +5,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Definitions',
-      items: [
-        { type: 'doc', id: 'proto/health.proto' },
-        { type: 'doc', id: 'proto/awacs.proto' },
-      ],
+      items: [{ type: 'doc', id: 'proto/awacs.proto' }],
     },
   ],
   docs: [
