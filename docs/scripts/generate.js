@@ -4,21 +4,30 @@ const fs = require('fs')
 const path = require('path')
 
 function copyHelm() {
-  const input = path.join(__dirname, '../k8s/helm/README.md')
-  const output = path.join(__dirname, '../docs/docs/deployment/helm.md')
-  fs.copyFileSync(input, output)
+  const input = path.join(__dirname, '../../k8s/helm/README.md')
+  const output = path.join(__dirname, '../docs/guides/deployment/helm.md')
+  const data = fs.readFileSync(input, 'utf8')
+  // Produce the existing output where helm and sidebar_position is appended to the output
+  fs.writeFileSync(
+    output,
+    data.replace('# awacs', '---\nsidebar_position: 3\n---\n\n# Helm'),
+  )
 }
 
 async function getOpenAPI() {
-  const output = path.join(__dirname, '../docs/static/openapi.json')
-  const { build } = await import('../../src/server.js')
-  const server = await build()
-  const response = await server.inject({
-    method: 'GET',
-    url: '/docs/json',
-  })
+  try {
+    const output = path.join(__dirname, '../static/openapi.json')
+    const { build } = await import('../../src/server.js')
+    const server = await build()
+    const response = await server.inject({
+      method: 'GET',
+      url: '/docs/json',
+    })
 
-  fs.writeFileSync(output, JSON.stringify(await response.json(), null, 2))
+    fs.writeFileSync(output, JSON.stringify(await response.json(), null, 2))
+  } catch (error) {
+    console.warn(`Failed to geneate OpenAPI`, error)
+  }
 }
 
 copyHelm()
