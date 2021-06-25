@@ -15,7 +15,9 @@ jobs:
     name: "Deploy documentation"
     
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
@@ -30,7 +32,7 @@ jobs:
 
       - name: "Generate Proto JSON"
         run: |
-          protoc --doc_out=./docs/static --doc_opt=json,proto_workspace.json --proto_path=./protofiles ./protofiles/**/*.proto
+          protoc --doc_out=./docs/static --doc_opt=json,proto_workspace.json --proto_path=protofiles protofiles/**/*.proto
 
       - name: "Generate Proto Markdown"
         working-directory: "docs"
