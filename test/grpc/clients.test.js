@@ -1,7 +1,11 @@
 import test from 'ava'
 import { v4 } from 'uuid'
-import * as Signing from '../../src/signing.js'
-import { getRandomPort, getGrpcClients, promisifyAll } from '../helper.js'
+import {
+  getRandomPort,
+  getGrpcClients,
+  promisifyAll,
+  sendEventRequest,
+} from '../helper.js'
 import private_server from '../../src/grpc.js'
 import { app_open } from '../seeds.js'
 
@@ -46,29 +50,8 @@ test('should find all clients', async (t) => {
   const { account_id, application_id, application } = t.context
   const client_id = v4()
 
-  async function sendEventRequest() {
-    const { build } = await import('../../src/server.js')
-    const server = await build()
-    const { body, statusCode } = await server.inject({
-      method: 'POST',
-      url: '/v1/events',
-      headers: {
-        'x-socketkit-key': application.authorization_key.toString('base64'),
-        'x-client-id': client_id,
-        'x-signature': await Signing.sign(
-          JSON.stringify(payload),
-          application.application_key,
-        ),
-      },
-      payload,
-    })
-
-    t.deepEqual(JSON.parse(body), {})
-    t.is(statusCode, 200)
-  }
-
-  await sendEventRequest()
-  await sendEventRequest()
+  await sendEventRequest(application, client_id, payload)
+  await sendEventRequest(application, client_id, payload)
 
   const response = await Clients.findAll({ account_id, application_id })
   t.truthy(response.rows)
@@ -96,28 +79,14 @@ test('should find a single client', async (t) => {
   const { account_id, application_id, application } = t.context
   const client_id = v4()
 
-  async function sendEventRequest() {
-    const { build } = await import('../../src/server.js')
-    const server = await build()
-    const { body, statusCode } = await server.inject({
-      method: 'POST',
-      url: '/v1/events',
-      headers: {
-        'x-socketkit-key': application.authorization_key.toString('base64'),
-        'x-client-id': client_id,
-        'x-signature': await Signing.sign(
-          JSON.stringify(payload),
-          application.application_key,
-        ),
-      },
-      payload,
-    })
+  const { body, statusCode } = await sendEventRequest(
+    application,
+    client_id,
+    payload,
+  )
 
-    t.deepEqual(JSON.parse(body), {})
-    t.is(statusCode, 200)
-  }
-
-  await sendEventRequest()
+  t.deepEqual(JSON.parse(body), {})
+  t.is(statusCode, 200)
 
   const response = await Clients.findOne({
     account_id,

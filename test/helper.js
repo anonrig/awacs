@@ -5,6 +5,7 @@ import path from 'path'
 import { promisify } from 'util'
 
 import config from '../src/config.js'
+import * as Signing from '../src/signing.js'
 
 import AjvCurrencyCode from '../src/validators/ajv-currency-code.js'
 import AjvSemver from '../src/validators/ajv-semver.js'
@@ -27,6 +28,26 @@ export function promisifyAll(subscriber) {
     to[k] = promisify(subscriber[k].bind(subscriber))
   }
   return to
+}
+
+export async function sendEventRequest(application, client_id, payload) {
+  const { build } = await import('../src/server.js')
+  const server = await build()
+  const { body, statusCode } = await server.inject({
+    method: 'POST',
+    url: '/v1/events',
+    headers: {
+      'x-socketkit-key': application.authorization_key.toString('base64'),
+      'x-client-id': client_id,
+      'x-signature': await Signing.sign(
+        JSON.stringify(payload),
+        application.application_key,
+      ),
+    },
+    payload,
+  })
+
+  return { body, statusCode }
 }
 
 export const getRandomPort = (a = 1000, b = 65000) => {
