@@ -41,7 +41,7 @@ test.after.always(async (t) => {
   await t.context.private_server.close()
 })
 
-test('should find all sessions', async (t) => {
+test.serial('should find all sessions', async (t) => {
   const Sessions = promisifyAll(t.context.clients.Sessions)
   const payload = [
     { name: 'app_open', timestamp: dayjs().unix() * 1000, ...app_open },
@@ -97,4 +97,51 @@ test.cb('findAll should check for valid account_id', (t) => {
     t.falsy(response)
     t.end()
   })
+})
+
+test.serial('findAll should limit the rows return', async (t) => {
+  const Sessions = promisifyAll(t.context.clients.Sessions)
+  const payload = [
+    { name: 'app_open', timestamp: dayjs().unix() * 1000, ...app_open },
+    { name: 'app_open', timestamp: dayjs().unix() * 1001, ...app_open },
+    { name: 'app_open', timestamp: dayjs().unix() * 1002, ...app_open },
+    { name: 'app_open', timestamp: dayjs().unix() * 1003, ...app_open },
+    { name: 'app_open', timestamp: dayjs().unix() * 1004, ...app_open },
+  ]
+
+  const { account_id, application } = t.context
+  const client_id = v4()
+
+  async function sendEventRequest() {
+    const { build } = await import('../../src/server.js')
+    const server = await build()
+    const { body, statusCode } = await server.inject({
+      method: 'POST',
+      url: '/v1/events',
+      headers: {
+        'x-socketkit-key': application.authorization_key.toString('base64'),
+        'x-client-id': client_id,
+        'x-signature': await Signing.sign(
+          JSON.stringify(payload),
+          application.application_key,
+        ),
+      },
+      payload,
+    })
+
+    t.deepEqual(JSON.parse(body), {})
+    t.is(statusCode, 200)
+  }
+
+  await sendEventRequest()
+
+  const response = await Sessions.findAll({ account_id, limit: 5 })
+
+  t.truthy(response.rows)
+  t.is(response.rows.length, 5)
+  t.is(response.rows[0].account_id, account_id)
+  t.is(response.rows[1].account_id, account_id)
+  t.is(response.rows[2].account_id, account_id)
+  t.is(response.rows[3].account_id, account_id)
+  t.is(response.rows[4].account_id, account_id)
 })
