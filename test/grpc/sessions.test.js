@@ -54,6 +54,11 @@ test.serial('should find all sessions', async (t) => {
       timestamp: dayjs().subtract(1, 'week').unix() * 1000,
       ...app_open,
     },
+    {
+      name: 'app_open',
+      timestamp: dayjs().subtract(2, 'week').unix() * 1000,
+      ...app_open,
+    },
   ]
 
   const { account_id, application_id, application } = t.context
@@ -70,12 +75,13 @@ test.serial('should find all sessions', async (t) => {
 
   const response = await Sessions.findAll({ account_id })
   t.truthy(response.rows)
-  t.is(response.rows.length, 2)
+  t.is(response.rows.length, 3)
   response.rows.forEach((row) => {
     t.is(row.application_id, application_id)
     t.is(row.account_id, account_id)
     t.is(row.client_id, client_id)
   })
+  t.falsy(response.cursor)
 })
 
 test.cb('findAll should check for valid account_id', (t) => {
@@ -92,19 +98,22 @@ test.cb('findAll should check for valid account_id', (t) => {
 })
 
 test.cb('findAll should limit the rows return', (t) => {
-  const Sessions = t.context.clients.Sessions
-
+  const { Sessions } = t.context.clients
   const { account_id, application_id } = t.context
 
-  Sessions.findAll({ account_id }, (error, response) => {
+  Sessions.findAll({ account_id, limit: 2 }, (error, response) => {
     t.falsy(error)
     t.truthy(response)
-
     t.is(response.rows.length, 2)
     response.rows.forEach((row) => {
       t.is(row.application_id, application_id)
       t.is(row.account_id, account_id)
     })
+    t.truthy(response.cursor)
+    t.is(
+      response.cursor.expired_at,
+      response.rows[response.rows.length - 1].expired_at,
+    )
     t.end()
   })
 })
