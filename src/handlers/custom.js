@@ -28,17 +28,17 @@ export async function handleCustom(
       trx,
     )
 
-    const { title, timestamp, ...properties } = fields
+    const { name, timestamp, ...properties } = fields
 
     await Events.create(
       {
         account_id,
         application_id,
         client_id,
-        name: fields.name,
+        title: fields.name,
         properties: properties,
         created_at: fields.timestamp,
-        session_started_at: session.start_at,
+        session_started_at: session.started_at,
       },
       trx,
     )
