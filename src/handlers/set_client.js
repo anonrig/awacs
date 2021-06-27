@@ -18,6 +18,19 @@ export async function handleSetClient(
       return reply.notFound(`Client not found`)
     }
 
+    await Clients.update(
+      {
+        ...client,
+        distinct_id: fields.distinct_id,
+        referer: fields.referer,
+        push_token: fields.push_token,
+        is_opt_out: fields.is_opt_out,
+        additional_properties: fields.additional_properties ?? {},
+        updated_at: new Date(),
+      },
+      trx,
+    )
+
     const session = await Sessions.findOrCreate(
       {
         account_id,
@@ -42,7 +55,7 @@ export async function handleSetClient(
           additional_properties: fields.additional_properties ?? {},
         },
         created_at: fields.timestamp,
-        session_started_at: session.start_at,
+        session_started_at: session.started_at,
       },
       trx,
     )
