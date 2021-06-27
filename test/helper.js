@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection */
 import Ajv from 'ajv'
 import grpc from '@grpc/grpc-js'
 import loader from '@grpc/proto-loader'
@@ -23,7 +24,7 @@ export const ajv = formatter
 
 export function promisifyAll(subscriber) {
   const to = {}
-  for (var k in subscriber) {
+  for (const k in subscriber) {
     if (typeof subscriber[k] != 'function') continue
     to[k] = promisify(subscriber[k].bind(subscriber))
   }
