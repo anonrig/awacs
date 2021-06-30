@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Docker
 
 We release our Docker images on [hub.docker.com](https://hub.docker.com/r/socketkit/awacs).

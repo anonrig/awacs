@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Installation
 
 Awacs' only dependency is PostgreSQL. Even though our underlying technology enables us to support MySQL, MariaDB, Oracle and MSSQL, currently PostgreSQL is the only supported database system. If you or your client needs others, please open a ticket from our Github.

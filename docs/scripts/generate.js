@@ -8,10 +8,7 @@ function copyHelm() {
   const output = path.join(__dirname, '../docs/guides/deployment/helm.md')
   const data = fs.readFileSync(input, 'utf8')
   // Produce the existing output where helm and sidebar_position is appended to the output
-  fs.writeFileSync(
-    output,
-    data.replace('# awacs', '---\nsidebar_position: 3\n---\n\n# Helm'),
-  )
+  fs.writeFileSync(output, data.replace('# awacs', '# Helm'))
 }
 
 async function getOpenAPI() {

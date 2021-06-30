@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # Security
 
 Coming soon.
