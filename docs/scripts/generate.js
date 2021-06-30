@@ -4,7 +4,7 @@ const fs = require('fs')
 const path = require('path')
 
 function copyHelm() {
-  const input = path.join(__dirname, '../../k8s/helm/README.md')
+  const input = path.join(__dirname, '../../charts/awacs/README.md')
   const output = path.join(__dirname, '../docs/guides/deployment/helm.md')
   const data = fs.readFileSync(input, 'utf8')
   // Produce the existing output where helm and sidebar_position is appended to the output

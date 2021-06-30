@@ -4,7 +4,7 @@ We only support Helm deployment at the moment. We'll update this documentation a
 
 ## Reference
 
-Refer to the [Helm configuration](https://github.com/socketkit/awacs/tree/main/k8s/helm/templates) to use as a base point for your Kubernetes integration.
+Refer to the [Helm configuration](https://github.com/socketkit/awacs/tree/main/charts/awacs/templates) to use as a base point for your Kubernetes integration.
 
 ## Prometheus
 
