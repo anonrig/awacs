@@ -5,6 +5,25 @@ on:
     types: [published]
 
 jobs:
+  push_to_helm:
+    name: Push as a Helm chart
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Publish Helm chart
+        uses: stefanprodan/helm-gh-pages@master
+        with:
+          token: ${{ secrets.PUBLISH_BOT_TOKEN }}
+          charts_dir: charts
+          charts_url: https://charts.socketkit.com
+          owner: socketkit
+          repository: awacs
+          branch: helm-gh-pages
+          commit_username: socketkit
+          commit_email: hello@socketkit.com
+
   push_to_dockerhub:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
