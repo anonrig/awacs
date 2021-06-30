@@ -1,16 +1,7 @@
-import * as Events from '../../event-types.js'
 import { handleAppOpen } from '../../handlers/app_open.js'
 import { handleInAppPurchase } from '../../handlers/in_app_purchase.js'
 import { handleSetClient } from '../../handlers/set_client.js'
 import { handleCustom } from '../../handlers/custom.js'
-
-import {
-  Authorization,
-  BadRequestError,
-  NotFoundError,
-  UnauthorizedError,
-  ExpectationFailedError,
-} from '../../schemas.js'
 
 export default {
   method: 'POST',
@@ -21,52 +12,17 @@ export default {
   schema: {
     description: 'Send an event',
     tags: ['event_endpoints'],
-    headers: Authorization,
+    headers: { $ref: 'authorization_header#' },
     body: {
       type: 'array',
       minItems: 1,
       items: {
         type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            description: 'Name of the event',
-            example: 'in_app_purchase',
-          },
-          timestamp: {
-            type: 'integer',
-            description: 'Timestamp of the event',
-            example: Date.now(),
-          },
-        },
-        additionalProperties: true,
-        minProperties: 2,
-        required: ['name', 'timestamp'],
-        allOf: [
-          {
-            allOf: [
-              {
-                if: { properties: { name: { enum: ['app_open'] } } },
-                then: Events.app_open,
-              },
-            ],
-          },
-          {
-            allOf: [
-              {
-                if: { properties: { name: { enum: ['in_app_purchase'] } } },
-                then: Events.in_app_purchase,
-              },
-            ],
-          },
-          {
-            allOf: [
-              {
-                if: { properties: { name: { enum: ['set_client'] } } },
-                then: Events.set_client,
-              },
-            ],
-          },
+        oneOf: [
+          { $ref: 'app_open_event#' },
+          { $ref: 'in_app_purchase_event#' },
+          { $ref: 'set_client_event#' },
+          { $ref: 'custom_event#' },
         ],
       },
     },
@@ -74,13 +30,11 @@ export default {
       200: {
         description: 'Event processing response',
         type: 'object',
-        properties: {},
-        required: [],
       },
-      400: BadRequestError,
-      401: UnauthorizedError,
-      404: NotFoundError,
-      417: ExpectationFailedError,
+      400: { $ref: 'generic_error#' },
+      401: { $ref: 'generic_error#' },
+      404: { $ref: 'generic_error#' },
+      417: { $ref: 'generic_error#' },
     },
   },
   handler: async (

@@ -1,10 +1,12 @@
 import test from 'ava'
 import { ajv } from '../helper.js'
-import { app_updated } from '../../src/event-types.js'
+import { app_updated } from '../../src/schemas/events.js'
 
 test('should check for new_version', async (t) => {
   const validate = ajv.compile(app_updated)
   const valid = validate({
+    name: 'app_updated',
+    timestamp: Date.now(),
     old_version: '1.0.0',
   })
   t.is(valid, false)
@@ -15,6 +17,8 @@ test('should check for new_version', async (t) => {
 test('should check for old_version', async (t) => {
   const validate = ajv.compile(app_updated)
   const valid = validate({
+    name: 'app_updated',
+    timestamp: Date.now(),
     new_version: '1.0.0',
   })
   t.is(valid, false)
@@ -25,6 +29,8 @@ test('should check for old_version', async (t) => {
 test('should validate new_version', async (t) => {
   const validate = ajv.compile(app_updated)
   const valid = validate({
+    name: 'app_updated',
+    timestamp: Date.now(),
     old_version: '1.0.0',
     new_version: 'HELLO',
   })
@@ -36,6 +42,8 @@ test('should validate new_version', async (t) => {
 test('should validate old_version', async (t) => {
   const validate = ajv.compile(app_updated)
   const valid = validate({
+    name: 'app_updated',
+    timestamp: Date.now(),
     old_version: 'HELLO',
     new_version: '1.0.0',
   })

@@ -17,7 +17,8 @@ import logger from './logger.js'
 import pg from './pg/index.js'
 import routes from './routes/index.js'
 
-import * as EventTypes from './event-types.js'
+import { add as addSchemas } from './schemas/index.js'
+
 import { validateAccess, validateSignature } from './middlewares.js'
 
 export async function build() {
@@ -73,45 +74,10 @@ export async function build() {
       info: {
         title: 'Awacs',
         description: 'Next-gen user behavior analysis server',
-      },
-      tags: Object.keys(EventTypes)
-        .map((k) => ({
-          name: EventTypes[k].title, // eslint-disable-line
-          description: `<SchemaDefinition schemaRef="#/components/schemas/${k}" />`,
-        }))
-        .concat([
-          {
-            name: 'event_endpoints',
-            'x-displayName': 'Events',
-            description: 'Event related end-points',
-          },
-        ]),
-      'x-tagGroups': [
-        {
-          name: 'Endpoints',
-          tags: ['event_endpoints'],
-        },
-        { name: 'Event Types', tags: Object.keys(EventTypes) },
-      ],
-      components: {
-        schemas: EventTypes,
-        securitySchemes: {
-          Authorization: {
-            type: 'apiKey',
-            name: 'x-socketkit-key',
-            in: 'header',
-            title: 'Access token',
-            description:
-              'Required for all operations specific to your application',
-          },
-        },
+        version: '1.0.0',
       },
     },
-    uiConfig: {
-      deepLinking: true,
-      showCommonExtensions: true,
-      tryItOutEnabled: false,
-    },
+    uiConfig: false,
     exposeRoute: true,
   })
 
@@ -153,6 +119,8 @@ export async function build() {
   server.get('/', { schema: { hide: true } }, async () => ({
     status: 'up',
   }))
+
+  addSchemas(server)
 
   return server
 }

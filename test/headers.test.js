@@ -1,7 +1,6 @@
 import test from 'ava'
 import { v4 } from 'uuid'
 import quibble from 'quibble'
-import { generateKeyPairSync } from 'crypto'
 import * as Signing from '../src/signing.js'
 import {
   mockApplicationGetByAuthorization,
@@ -14,7 +13,7 @@ test('should validate x-socketkit-key', async (t) => {
   const { statusCode, body } = await server.inject({
     method: 'POST',
     url: '/v1/events',
-    payload: [{ name: 'non-existent', timestamp: Date.now() }],
+    payload: [{ name: 'custom', timestamp: Date.now() }],
   })
   const response = JSON.parse(body)
   t.is(statusCode, 400)
@@ -33,7 +32,7 @@ test('should validate x-client-id', async (t) => {
   const { statusCode, body } = await server.inject({
     method: 'POST',
     url: '/v1/events',
-    payload: [{ name: 'non-existent', timestamp: Date.now() }],
+    payload: [{ name: 'custom', timestamp: Date.now() }],
     headers: {
       'x-socketkit-key': v4(),
     },
@@ -59,7 +58,7 @@ test.serial('should throw forbidden on wrong x-socketkit-key', async (t) => {
   const { statusCode, body } = await server.inject({
     method: 'POST',
     url: '/v1/events',
-    payload: [{ name: 'non-existent', timestamp: Date.now() }],
+    payload: [{ name: 'custom', timestamp: Date.now() }],
     headers: {
       'x-socketkit-key': v4(),
       'x-client-id': v4(),
@@ -67,7 +66,6 @@ test.serial('should throw forbidden on wrong x-socketkit-key', async (t) => {
     },
   })
   const response = JSON.parse(body)
-
   t.is(statusCode, 403)
   t.is(response.error, 'Forbidden')
   t.truthy(
@@ -79,7 +77,6 @@ test.serial('should throw forbidden on wrong x-socketkit-key', async (t) => {
 test.serial(
   'should throw precondition failed on wrong x-signature',
   async (t) => {
-    const { publicKey, privateKey } = generateKeyPairSync('ed25519')
     const defaults = {
       account_id: v4(),
       application_id: v4(),
@@ -94,7 +91,7 @@ test.serial(
     const { statusCode, body } = await server.inject({
       method: 'POST',
       url: '/v1/events',
-      payload: [{ name: 'non-existent', timestamp: Date.now() }],
+      payload: [{ name: 'custom', timestamp: Date.now() }],
       headers: {
         'x-socketkit-key': v4(),
         'x-client-id': v4(),
