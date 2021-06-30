@@ -1,14 +1,15 @@
 FROM mhart/alpine-node:16
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --prod
 
-ENV NODE_ENV=production
-ENV PORT=3002
-ENV TZ=UTC
-
-COPY package*.json ./
-RUN npm ci --prefer-offline --no-audit --progress=false
-
+FROM mhart/alpine-node:slim-16
+WORKDIR /app
+COPY --from=0 /app .
 COPY . .
+ENV NODE_ENV=production
+ENV TZ=UTC
 EXPOSE 3002
 EXPOSE 4001
 
-CMD ["npm", "start"]
+CMD ["node", "src/index.js"]
