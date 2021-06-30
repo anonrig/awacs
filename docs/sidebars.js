@@ -46,6 +46,17 @@ module.exports = {
             },
           ],
         },
+        {
+          type: 'category',
+          label: 'Performance',
+          collapsed: false,
+          items: [
+            {
+              type: 'doc',
+              id: 'performance/metrics',
+            },
+          ],
+        },
       ],
     },
   ],
