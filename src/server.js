@@ -112,9 +112,6 @@ export async function build() {
   if (!process.env.CI) {
     server.register(pressure, {
       exposeStatusRoute: {
-        routeOpts: {
-          logLevel: 'debug',
-        },
         routeSchemaOpts: {
           hide: true,
         },
