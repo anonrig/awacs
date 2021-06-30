@@ -51,6 +51,10 @@ module.exports = {
           label: 'Performance',
           collapsed: false,
           items: [
+          {
+              type: 'doc',
+              id: 'performance/high-availability',
+            },
             {
               type: 'doc',
               id: 'performance/metrics',
