@@ -1,4 +1,5 @@
 import grpcjs from '@grpc/grpc-js'
+import { v4 } from 'uuid'
 import ajvCurrency from './validators/ajv-currency-code.js'
 import ajvSemver from './validators/ajv-semver.js'
 import ajvLocale from './validators/ajv-locale-code.js'
@@ -61,14 +62,9 @@ export async function build() {
 
   await server.register(auth)
 
-  server.register(rawBody, {
-    field: 'rawBody',
-    global: false,
-    encoding: 'utf8',
-    runFirst: true,
-  })
-  server.register(cors)
-  server.register(swagger, {
+  addSchemas(server)
+
+  fastify.register(swagger, {
     routePrefix: '/docs',
     openapi: {
       info: {
@@ -76,10 +72,41 @@ export async function build() {
         description: 'Next-gen user behavior analysis server',
         version: '1.0.0',
       },
+      externalDocs: {
+        url: 'https://awacs.socketkit.com',
+        description: 'Awacs official documentation',
+      },
+      schemes: ['https'],
+      consumes: ['application/json'],
+      produces: ['application/json'],
+      components: {
+        securitySchemes: {
+          SocketkitKey: {
+            type: 'apiKey',
+            name: 'x-socketkit-key',
+            in: 'header',
+            description: 'Socketkit API Token gathered through the private API',
+          },
+          ClientId: {
+            type: 'apiKey',
+            name: 'x-client-id',
+            in: 'header',
+            description: 'Client id of the user',
+            example: v4(),
+          },
+        },
+      },
     },
-    uiConfig: false,
     exposeRoute: true,
   })
+
+  server.register(rawBody, {
+    field: 'rawBody',
+    global: false,
+    encoding: 'utf8',
+    runFirst: true,
+  })
+  server.register(cors)
 
   if (!process.env.CI) {
     server.register(pressure, {
@@ -103,7 +130,19 @@ export async function build() {
 
   server.register(sensible, { errorHandler: false })
   server.register(compress)
-  server.register(helmet)
+  server.register(helmet, (instance) => {
+    return {
+      contentSecurityPolicy: {
+        directives: {
+          ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+          'form-action': ["'self'"],
+          'img-src': ["'self'", 'data:', 'validator.swagger.io'],
+          'script-src': ["'self'"].concat(instance.swaggerCSP.script),
+          'style-src': ["'self'", 'https:'].concat(instance.swaggerCSP.style),
+        },
+      },
+    }
+  })
 
   server.addHook('preHandler', (req, res, next) => {
     if (!req.routerPath?.startsWith('/v1/')) {
@@ -119,8 +158,6 @@ export async function build() {
   server.get('/', { schema: { hide: true } }, async () => ({
     status: 'up',
   }))
-
-  addSchemas(server)
 
   return server
 }

@@ -10,9 +10,10 @@ export default {
     rawBody: true,
   },
   schema: {
+    operationId: 'sendEvent',
     description: 'Send an event',
-    tags: ['event_endpoints'],
     headers: { $ref: 'authorization_header#' },
+    security: [{ SocketkitKey: [], ClientId: [] }],
     body: {
       type: 'array',
       minItems: 1,
@@ -28,13 +29,13 @@ export default {
     },
     response: {
       200: {
-        description: 'Event processing response',
+        description: 'Valid response',
         type: 'object',
       },
-      400: { $ref: 'generic_error#' },
-      401: { $ref: 'generic_error#' },
-      404: { $ref: 'generic_error#' },
-      417: { $ref: 'generic_error#' },
+      400: { $ref: 'generic_error#', description: 'Bad Request' },
+      401: { $ref: 'generic_error#', description: 'Unauthorized' },
+      404: { $ref: 'generic_error#', description: 'Not Found' },
+      417: { $ref: 'generic_error#', description: 'Expectation Failed' },
     },
   },
   handler: async (
