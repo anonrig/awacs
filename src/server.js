@@ -13,6 +13,7 @@ import helmet from 'fastify-helmet'
 import metrics from 'fastify-metrics'
 import sensible from 'fastify-sensible'
 import swagger from 'fastify-swagger'
+import tracer from 'cls-rtracer'
 import pressure from 'under-pressure'
 import logger from './logger.js'
 import pg from './pg/index.js'
@@ -127,7 +128,11 @@ export async function build() {
     })
     server.register(metrics, { endpoint: '/metrics' })
   }
-
+  server.register(tracer.fastifyPlugin, {
+    echoHeader: true,
+    useHeader: true,
+    useFastifyRequestId: true,
+  })
   server.register(sensible, { errorHandler: false })
   server.register(compress)
   server.register(helmet, (instance) => {
