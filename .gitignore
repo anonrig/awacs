@@ -6,13 +6,12 @@
 /.nyc_output
 /.nova
 yarn.lock
+postgresql
 
 docs/.docusaurus
 docs/build
 docs/node_modules
 docs/static/openapi.json
-
-
 docs/sidebars-protodoc.js
 docs/static/proto_workspace.json
 docs/docs/proto
