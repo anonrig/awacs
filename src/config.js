@@ -15,7 +15,7 @@ export default {
     migrations: {
       loadExtensions: ['.js'],
       tableName: 'migrations',
-      directory: '../db/migrations',
+      directory: './migrations',
     },
     useNullAsDefault: false,
     asyncStackTraces: true,

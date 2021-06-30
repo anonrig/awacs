@@ -16,8 +16,8 @@ const options = {
   defaults: true,
   oneofs: true,
 }
-const file = path.join(path.resolve(''), 'protofiles/awacs.proto')
-const health = path.join(path.resolve(''), 'protofiles/health.proto')
+const file = path.join(path.resolve(''), './src/protofiles/awacs.proto')
+const health = path.join(path.resolve(''), './src/protofiles/health.proto')
 const performanceObserver = new PerformanceObserver((list) => {
   list.getEntries().forEach((entry) => {
     logger
