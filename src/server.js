@@ -64,7 +64,7 @@ export async function build() {
 
   addSchemas(server)
 
-  fastify.register(swagger, {
+  server.register(swagger, {
     routePrefix: '/docs',
     openapi: {
       info: {
