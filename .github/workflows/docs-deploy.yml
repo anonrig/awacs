@@ -38,6 +38,10 @@ jobs:
         run: |
           protoc --doc_out=$GITHUB_WORKSPACE/docs/static --doc_opt=json,proto_workspace.json --proto_path=$GITHUB_WORKSPACE/protofiles $GITHUB_WORKSPACE/protofiles/awacs.proto
 
+      - name: "Install dependencies"
+        run: |
+          npm ci
+
       - name: "Generate Proto Markdown"
         working-directory: "docs"
         run: |
