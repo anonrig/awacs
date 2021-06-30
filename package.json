@@ -41,7 +41,7 @@
     "fastify-metrics": "^7.2.3",
     "fastify-raw-body": "^3.1.0",
     "fastify-sensible": "^3.1.1",
-    "fastify-swagger": "^4.8.1",
+    "fastify-swagger": "^4.8.2",
     "knex": "^0.95.6",
     "locale-code": "^2.0.2",
     "mali": "^0.44.0",
@@ -62,7 +62,7 @@
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-security": "^1.4.0",
-    "nodemon": "^2.0.8",
+    "nodemon": "^2.0.9",
     "prettier": "^2.3.2",
     "quibble": "^0.6.5"
   },
