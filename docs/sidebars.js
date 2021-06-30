@@ -16,12 +16,6 @@ module.exports = {
         'index',
         {
           type: 'category',
-          label: 'Concepts',
-          collapsed: false,
-          items: ['privacy', 'security'],
-        },
-        {
-          type: 'category',
           label: 'Getting Started',
           collapsed: false,
           items: [
@@ -29,6 +23,7 @@ module.exports = {
             'getting-started/configuration',
           ],
         },
+        'security',
         {
           type: 'category',
           label: 'Guides',
