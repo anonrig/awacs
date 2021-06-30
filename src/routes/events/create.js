@@ -36,6 +36,7 @@ export default {
       401: { $ref: 'generic_error#', description: 'Unauthorized' },
       404: { $ref: 'generic_error#', description: 'Not Found' },
       417: { $ref: 'generic_error#', description: 'Expectation Failed' },
+      500: { $ref: 'generic_error#', description: 'Internal Server Error' },
     },
   },
   handler: async (
