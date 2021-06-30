@@ -2,7 +2,7 @@
 
 We release our Docker images on [hub.docker.com](https://hub.docker.com/r/socketkit/awacs).
 
-## Standalone container
+## Standalone
 
 ```shell
 $ docker pull socketkit/awacs:latest

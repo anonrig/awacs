@@ -49,6 +49,10 @@ services:
 
 ## Kubernetes
 
+### Kubernetes
+
+Take a look into [Kubernetes documentation](/guides/deployment/kubernetes).
+
 ### Helm
 
 Awacs has an official Helm chart. Please refer to the [Helm documentation](/guides/deployment/helm) for more information.

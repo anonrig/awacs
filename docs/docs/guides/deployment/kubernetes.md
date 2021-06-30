@@ -2,6 +2,10 @@
 
 We only support Helm deployment at the moment. We'll update this documentation as soon as possible.
 
+## Reference
+
+Refer to the [Helm configuration](https://github.com/socketkit/awacs/tree/main/k8s/helm/templates) to use as a base point for your Kubernetes integration.
+
 ## Prometheus
 
 Prometheus metrics are supported by default on our public API.
