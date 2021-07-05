@@ -10,7 +10,7 @@ export const Authorization = {
       type: 'string',
       name: 'authorization_key',
       description: 'Access token',
-      example: randomUUID(),
+      example: Buffer.from('my-authorization-key').toString('base64'),
       format: 'base64',
     },
     'x-client-id': {
@@ -23,8 +23,9 @@ export const Authorization = {
       type: 'string',
       name: 'signed_events',
       description: 'Signed payload of the request body using EDDSA (ed25519)',
-      example:
-        'L+ObHL8qa75PIarUPKS65RHPLRSqeTFg30aC/V0r8k+G3hJxyXJfcAiFb3XEQRVN31x2tkhyMbYjcguEYpiLDQ==',
+      example: Buffer.from(
+        JSON.stringify([{ title: 'Signed payload' }]),
+      ).toString('base64'),
       format: 'base64',
     },
   },
