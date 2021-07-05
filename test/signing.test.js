@@ -1,5 +1,5 @@
 import test from 'ava'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import * as Signing from '../src/signing.js'
 
 test('should sign', async (t) => {
@@ -28,7 +28,7 @@ test('should validate body on sign', async (t) => {
 
 test('should validate', async (t) => {
   const { server_key, application_key } = await Signing.generateSigningKeys()
-  const plain = v4()
+  const plain = randomUUID()
   const signed = await Signing.sign(plain, application_key)
   const valid = await Signing.validate(plain, server_key, signed)
   t.is(valid, true)

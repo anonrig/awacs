@@ -1,5 +1,5 @@
 import test from 'ava'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import { getRandomPort, getGrpcClients } from '../helper.js'
 import server from '../../src/grpc.js'
 
@@ -20,8 +20,8 @@ test.cb('should create an application', (t) => {
   t.plan(7)
 
   const { Applications } = t.context.clients
-  const account_id = v4()
-  const application_id = v4()
+  const account_id = randomUUID()
+  const application_id = randomUUID()
 
   Applications.create(
     {
@@ -56,8 +56,8 @@ test.cb('should find all applications', (t) => {
   t.plan(6)
 
   const { Applications } = t.context.clients
-  const account_id = v4()
-  const application_id = v4()
+  const account_id = randomUUID()
+  const application_id = randomUUID()
 
   Applications.create(
     {
@@ -90,8 +90,8 @@ test.cb('should find one application', (t) => {
   t.plan(11)
 
   const { Applications } = t.context.clients
-  const account_id = v4()
-  const application_id = v4()
+  const account_id = randomUUID()
+  const application_id = randomUUID()
 
   Applications.findOne({ account_id, application_id }, (error, response) => {
     t.falsy(error)
@@ -133,8 +133,8 @@ test.cb('should update an application', (t) => {
   t.plan(8)
 
   const { Applications } = t.context.clients
-  const account_id = v4()
-  const application_id = v4()
+  const account_id = randomUUID()
+  const application_id = randomUUID()
 
   Applications.create(
     {

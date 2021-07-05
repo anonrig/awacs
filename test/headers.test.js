@@ -1,5 +1,5 @@
 import test from 'ava'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import quibble from 'quibble'
 import * as Signing from '../src/signing.js'
 import {
@@ -34,7 +34,7 @@ test('should validate x-client-id', async (t) => {
     url: '/v1/events',
     payload: [{ name: 'custom', timestamp: Date.now() }],
     headers: {
-      'x-socketkit-key': v4(),
+      'x-socketkit-key': randomUUID(),
     },
   })
   const response = JSON.parse(body)
@@ -60,8 +60,8 @@ test.serial('should throw forbidden on wrong x-socketkit-key', async (t) => {
     url: '/v1/events',
     payload: [{ name: 'custom', timestamp: Date.now() }],
     headers: {
-      'x-socketkit-key': v4(),
-      'x-client-id': v4(),
+      'x-socketkit-key': randomUUID(),
+      'x-client-id': randomUUID(),
       'x-signature': 'hello',
     },
   })
@@ -78,8 +78,8 @@ test.serial(
   'should throw precondition failed on wrong x-signature',
   async (t) => {
     const defaults = {
-      account_id: v4(),
-      application_id: v4(),
+      account_id: randomUUID(),
+      application_id: randomUUID(),
       ...(await Signing.generateSigningKeys()),
     }
     await mockApplicationGetByAuthorization(defaults)
@@ -93,8 +93,8 @@ test.serial(
       url: '/v1/events',
       payload: [{ name: 'custom', timestamp: Date.now() }],
       headers: {
-        'x-socketkit-key': v4(),
-        'x-client-id': v4(),
+        'x-socketkit-key': randomUUID(),
+        'x-client-id': randomUUID(),
         'x-signature':
           'QqlYhRftVv2RIjYyki4agRZ/lzoFF9IGhytjEFl736ZKiO3Oijw/eDFp0gKN9f9fflSz3gnz0vyq60QtM0gJBQ==',
       },

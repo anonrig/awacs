@@ -1,5 +1,5 @@
 import test from 'ava'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import dayjs from 'dayjs'
 import {
   getRandomPort,
@@ -11,8 +11,8 @@ import private_server from '../../src/grpc.js'
 import { app_open } from '../seeds.js'
 
 test.before(async (t) => {
-  const account_id = v4()
-  const application_id = v4()
+  const account_id = randomUUID()
+  const application_id = randomUUID()
   const port = getRandomPort()
 
   await private_server.start(`0.0.0.0:${port}`)
@@ -62,7 +62,7 @@ test.serial('should find all sessions', async (t) => {
   ]
 
   const { account_id, application_id, application } = t.context
-  const client_id = v4()
+  const client_id = randomUUID()
 
   const { body, statusCode } = await sendEventRequest(
     application,

@@ -1,5 +1,4 @@
-import { createHash } from 'crypto'
-import { v4 } from 'uuid'
+import { createHash, randomUUID } from 'crypto'
 import grpc from '@grpc/grpc-js'
 
 import pg from './index.js'
@@ -114,6 +113,6 @@ export async function create(
   return application
 }
 
-export function generateAuthorizationKey(random_string = v4()) {
+export function generateAuthorizationKey(random_string = randomUUID()) {
   return createHash('sha256').update(random_string).digest()
 }

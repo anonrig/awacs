@@ -1,4 +1,4 @@
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 
 export const app_open = {
   $id: 'app_open_event',
@@ -174,9 +174,9 @@ export const set_client = {
       description: 'Unix timestamp of the event',
       example: Date.now(),
     },
-    distinct_id: { type: 'string', example: v4() },
+    distinct_id: { type: 'string', example: randomUUID() },
     referer: { type: 'string', example: 'Google Ads' },
-    push_token: { type: 'string', example: v4() },
+    push_token: { type: 'string', example: randomUUID() },
     is_opt_out: { type: 'boolean', example: false },
     additional_properties: {
       type: 'object',

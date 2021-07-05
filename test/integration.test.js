@@ -1,5 +1,5 @@
 import test from 'ava'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import dayjs from 'dayjs'
 
 import {
@@ -12,8 +12,8 @@ import private_server from '../src/grpc.js'
 import { app_open } from './seeds.js'
 
 test.before(async (t) => {
-  const account_id = v4()
-  const application_id = v4()
+  const account_id = randomUUID()
+  const application_id = randomUUID()
   const port = getRandomPort()
 
   await private_server.start(`0.0.0.0:${port}`)
@@ -47,7 +47,7 @@ test.after.always(async (t) => {
 })
 
 test('public api should accept first_app_open requests', async (t) => {
-  const client_id = v4()
+  const client_id = randomUUID()
   const Events = promisifyAll(t.context.clients.Events)
   const { application, account_id } = t.context
   const payload = [{ name: 'app_open', timestamp: Date.now(), ...app_open }]
@@ -70,7 +70,7 @@ test('public api should accept first_app_open requests', async (t) => {
 })
 
 test('public api should accept set_client requests', async (t) => {
-  const client_id = v4()
+  const client_id = randomUUID()
   const { application, account_id } = t.context
   const payload = [
     {
@@ -114,7 +114,7 @@ test('public api should accept set_client requests', async (t) => {
 })
 
 test('public api should accept in_app_purchase requests', async (t) => {
-  const client_id = v4()
+  const client_id = randomUUID()
   const { application, account_id } = t.context
   const payload = [
     {
@@ -147,7 +147,7 @@ test('public api should accept in_app_purchase requests', async (t) => {
 })
 
 test('public api should accept custom requests', async (t) => {
-  const client_id = v4()
+  const client_id = randomUUID()
   const { application, account_id } = t.context
   const payload = [
     {

@@ -47,8 +47,7 @@
     "mali": "^0.44.1",
     "pg": "^8.6.0",
     "semver": "^7.3.5",
-    "under-pressure": "^5.7.0",
-    "uuid": "^8.3.2"
+    "under-pressure": "^5.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",

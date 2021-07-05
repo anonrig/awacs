@@ -1,5 +1,5 @@
 import test from 'ava'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import {
   getRandomPort,
   getGrpcClients,
@@ -10,8 +10,8 @@ import private_server from '../../src/grpc.js'
 import { app_open } from '../seeds.js'
 
 test.before(async (t) => {
-  const account_id = v4()
-  const application_id = v4()
+  const account_id = randomUUID()
+  const application_id = randomUUID()
   const port = getRandomPort()
 
   await private_server.start(`0.0.0.0:${port}`)
@@ -48,7 +48,7 @@ test('should find all clients', async (t) => {
   const Clients = promisifyAll(t.context.clients.Clients)
   const payload = [{ name: 'app_open', timestamp: Date.now(), ...app_open }]
   const { account_id, application_id, application } = t.context
-  const client_id = v4()
+  const client_id = randomUUID()
 
   await sendEventRequest(application, client_id, payload)
   await sendEventRequest(application, client_id, payload)
@@ -77,7 +77,7 @@ test('should find a single client', async (t) => {
   const Clients = promisifyAll(t.context.clients.Clients)
   const payload = [{ name: 'app_open', timestamp: Date.now(), ...app_open }]
   const { account_id, application_id, application } = t.context
-  const client_id = v4()
+  const client_id = randomUUID()
 
   const { body, statusCode } = await sendEventRequest(
     application,

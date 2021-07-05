@@ -1,9 +1,9 @@
-import { validate } from 'uuid'
+import { uuid } from './validate.js'
 
 export default function (ajv) {
   ajv.addFormat('uuid', {
     type: 'string',
     errors: true,
-    validate: (data) => validate(data),
+    validate: (data) => uuid(data),
   })
 }

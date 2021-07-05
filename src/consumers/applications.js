@@ -1,13 +1,13 @@
-import { validate } from 'uuid'
 import grpc from '@grpc/grpc-js'
 
+import * as Validate from '../validators/validate.js'
 import pg from '../pg/index.js'
 import * as Application from '../pg/application.js'
 
 export async function findAll(ctx) {
   const { account_id } = ctx.req
 
-  if (!validate(account_id)) {
+  if (!Validate.uuid(account_id)) {
     const error = new Error('Invalid account_id')
     error.code = grpc.status.FAILED_PRECONDITION
     throw error
@@ -19,7 +19,7 @@ export async function findAll(ctx) {
 export async function findOne(ctx) {
   const { account_id, application_id } = ctx.req
 
-  if (!validate(account_id)) {
+  if (!Validate.uuid(account_id)) {
     const error = new Error('Invalid account_id')
     error.code = grpc.status.FAILED_PRECONDITION
     throw error
@@ -29,7 +29,7 @@ export async function findOne(ctx) {
 }
 
 export async function create(ctx) {
-  if (!validate(ctx.req.account_id)) {
+  if (!Validate.uuid(ctx.req.account_id)) {
     const error = new Error('Invalid account_id')
     error.code = grpc.status.FAILED_PRECONDITION
     throw error
@@ -41,7 +41,7 @@ export async function create(ctx) {
 }
 
 export async function update(ctx) {
-  if (!validate(ctx.req.account_id)) {
+  if (!Validate.uuid(ctx.req.account_id)) {
     const error = new Error('Invalid account_id')
     error.code = grpc.status.FAILED_PRECONDITION
     throw error
@@ -55,7 +55,7 @@ export async function update(ctx) {
 export async function destroy(ctx) {
   const { account_id, application_id } = ctx.req
 
-  if (!validate(account_id)) {
+  if (!Validate.uuid(account_id)) {
     const error = new Error('Invalid account_id')
     error.code = grpc.status.FAILED_PRECONDITION
     throw error

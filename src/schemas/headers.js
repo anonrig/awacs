@@ -1,4 +1,4 @@
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 
 export const Authorization = {
   $id: 'authorization_header',
@@ -10,13 +10,13 @@ export const Authorization = {
       type: 'string',
       name: 'authorization_key',
       description: 'Access token',
-      example: v4(),
+      example: randomUUID(),
     },
     'x-client-id': {
       type: 'string',
       name: 'client_id',
       description: 'Client identifier',
-      example: v4(),
+      example: randomUUID(),
     },
     'x-signature': {
       type: 'string',

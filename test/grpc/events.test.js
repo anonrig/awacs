@@ -1,5 +1,5 @@
 import test from 'ava'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import { getRandomPort, getGrpcClients } from '../helper.js'
 import server from '../../src/grpc.js'
 
@@ -20,7 +20,7 @@ test.cb('findAll should return rows', (t) => {
   t.plan(4)
 
   const { Events } = t.context.clients
-  const account_id = v4()
+  const account_id = randomUUID()
 
   Events.findAll({ account_id }, (error, response) => {
     t.is(error, null)

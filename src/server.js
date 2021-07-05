@@ -1,5 +1,5 @@
 import grpcjs from '@grpc/grpc-js'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import ajvCurrency from './validators/ajv-currency-code.js'
 import ajvSemver from './validators/ajv-semver.js'
 import ajvLocale from './validators/ajv-locale-code.js'
@@ -93,7 +93,7 @@ export async function build() {
             name: 'x-client-id',
             in: 'header',
             description: 'Client id of the user',
-            example: v4(),
+            example: randomUUID(),
           },
         },
       },
