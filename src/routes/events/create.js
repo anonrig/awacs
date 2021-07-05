@@ -1,14 +1,16 @@
+import Logger from '../../logger.js'
+
 import { handleAppOpen } from '../../handlers/app_open.js'
 import { handleInAppPurchase } from '../../handlers/in_app_purchase.js'
 import { handleSetClient } from '../../handlers/set_client.js'
 import { handleCustom } from '../../handlers/custom.js'
 
+const logger = Logger.create().withScope('events').withTag('create')
+
 export default {
   method: 'POST',
   url: '/',
-  config: {
-    rawBody: true,
-  },
+  config: { rawBody: true },
   schema: {
     operationId: 'sendEvent',
     description: 'Send an event',
@@ -28,10 +30,7 @@ export default {
       },
     },
     response: {
-      200: {
-        description: 'Valid response',
-        type: 'object',
-      },
+      200: { $ref: 'empty_response#', description: 'Empty Response' },
       400: { $ref: 'generic_error#', description: 'Bad Request' },
       401: { $ref: 'generic_error#', description: 'Unauthorized' },
       404: { $ref: 'generic_error#', description: 'Not Found' },
@@ -62,9 +61,11 @@ export default {
         case 'set_client':
           await handleSetClient(reply, primaryKeys, event)
           break
-        default:
+        case 'custom':
           await handleCustom(reply, primaryKeys, event)
           break
+        default:
+          logger.warn(`Received unknown event: ${event.name}`, event)
       }
     }
     return {}
