@@ -10,6 +10,6 @@ test('should validate uuid', (t) => {
 })
 
 test('should validate base64', (t) => {
-  t.truthy(base64('hello-world').toString('base64'))
+  t.truthy(base64(Buffer.from('hello-world').toString('base64')))
   t.falsy(base64('hello-world'))
 })
