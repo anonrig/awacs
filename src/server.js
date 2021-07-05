@@ -15,13 +15,14 @@ import sensible from 'fastify-sensible'
 import swagger from 'fastify-swagger'
 import tracer from 'cls-rtracer'
 import pressure from 'under-pressure'
+
 import logger from './logger.js'
 import pg from './pg/index.js'
 import routes from './routes/index.js'
-
+import { validateAccess, validateSignature } from './middlewares.js'
 import { add as addSchemas } from './schemas/index.js'
 
-import { validateAccess, validateSignature } from './middlewares.js'
+import pkg from './pkg.js'
 
 export async function build() {
   const server = f({
@@ -71,7 +72,7 @@ export async function build() {
       info: {
         title: 'Awacs',
         description: 'Next-gen user behavior analysis server',
-        version: '1.0.0',
+        version: pkg.version,
       },
       externalDocs: {
         url: 'https://awacs.socketkit.com',
