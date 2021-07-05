@@ -34,7 +34,7 @@ test('should validate x-client-id', async (t) => {
     url: '/v1/events',
     payload: [{ name: 'custom', timestamp: Date.now() }],
     headers: {
-      'x-socketkit-key': randomUUID(),
+      'x-socketkit-key': Buffer.from('secret-key').toString('base64'),
     },
   })
   const response = JSON.parse(body)
@@ -60,18 +60,20 @@ test.serial('should throw forbidden on wrong x-socketkit-key', async (t) => {
     url: '/v1/events',
     payload: [{ name: 'custom', timestamp: Date.now() }],
     headers: {
-      'x-socketkit-key': randomUUID(),
+      'x-socketkit-key': Buffer.from('my-super-secret-socketkit-key').toString(
+        'base64',
+      ),
       'x-client-id': randomUUID(),
-      'x-signature': 'hello',
+      'x-signature': Buffer.from('hello').toString('base64'),
     },
   })
   const response = JSON.parse(body)
-  t.is(statusCode, 403)
-  t.is(response.error, 'Forbidden')
   t.truthy(
     response.message.includes('Invalid authorization key'),
     response.message,
   )
+  t.is(response.error, 'Forbidden')
+  t.is(statusCode, 403)
 })
 
 test.serial(
@@ -93,19 +95,18 @@ test.serial(
       url: '/v1/events',
       payload: [{ name: 'custom', timestamp: Date.now() }],
       headers: {
-        'x-socketkit-key': randomUUID(),
+        'x-socketkit-key': Buffer.from('secret-key').toString('base64'),
         'x-client-id': randomUUID(),
         'x-signature':
           'QqlYhRftVv2RIjYyki4agRZ/lzoFF9IGhytjEFl736ZKiO3Oijw/eDFp0gKN9f9fflSz3gnz0vyq60QtM0gJBQ==',
       },
     })
     const response = JSON.parse(body)
-
-    t.is(statusCode, 417)
-    t.is(response.error, 'Expectation Failed')
     t.truthy(
       response.message.includes('Application signature does not match'),
       response.message,
     )
+    t.is(statusCode, 417)
+    t.is(response.error, 'Expectation Failed')
   },
 )

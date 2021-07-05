@@ -4,6 +4,7 @@ import ajvCurrency from './validators/ajv-currency-code.js'
 import ajvSemver from './validators/ajv-semver.js'
 import ajvLocale from './validators/ajv-locale-code.js'
 import ajvUuid from './validators/ajv-uuid.js'
+import ajvBase64 from './validators/ajv-base64.js'
 import f from 'fastify'
 import auth from 'fastify-auth'
 import rawBody from 'fastify-raw-body'
@@ -31,7 +32,7 @@ export async function build() {
     logger: false,
     ajv: {
       customOptions: { jsonPointers: true },
-      plugins: [ajvSemver, ajvCurrency, ajvLocale, ajvUuid],
+      plugins: [ajvSemver, ajvCurrency, ajvLocale, ajvUuid, ajvBase64],
     },
   })
 
