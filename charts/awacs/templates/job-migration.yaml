@@ -41,7 +41,7 @@ spec:
         - name: {{ .Chart.Name }}-automigrate
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["npm", "run", "migrate"]
+          command: ["./node_modules/knex/bin/cli.js", "migrate:latest", "--knexfile=src/knexfile.js"]
           envFrom:
             - secretRef:
                 name: {{ include "chart.fullname" . }}-secrets
