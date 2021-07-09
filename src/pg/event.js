@@ -50,11 +50,11 @@ export async function findAll(
       }
 
       if (start_date) {
-        this.where('created_at', '>', start_date)
+        this.where('created_at', '>', dayjs(start_date).toDate())
       }
 
       if (end_date) {
-        this.where('created_at', '<=', end_date)
+        this.where('created_at', '<=', dayjs(end_date).toDate())
       }
 
       if (cursor) {
@@ -64,7 +64,7 @@ export async function findAll(
           throw new Error(`Invalid cursor for pagination`)
         }
 
-        this.where('created_at', '<', created_at)
+        this.where('created_at', '<', dayjs(created_at).toDate())
       }
     })
     .limit(limit)

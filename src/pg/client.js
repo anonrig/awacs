@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 import pg from './index.js'
 
 export function findOne({ account_id, application_id, client_id }) {
@@ -63,7 +65,7 @@ export async function findAll(
           throw new Error(`Invalid cursor for pagination`)
         }
 
-        this.where('created_at', '<', created_at)
+        this.where('created_at', '<', dayjs(created_at).toDate())
       }
     })
     .limit(limit)

@@ -83,7 +83,7 @@ export async function findAll(
           throw new Error(`Invalid cursor for pagination`)
         }
 
-        this.where('expired_at', '<', expired_at)
+        this.where('expired_at', '<', dayjs(expired_at).toDate())
       }
     })
     .limit(limit)
