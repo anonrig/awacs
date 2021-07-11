@@ -8,10 +8,10 @@ import { promisify } from 'util'
 import config from '../src/config.js'
 import * as Signing from '../src/signing.js'
 
-import AjvCurrencyCode from '../src/validators/ajv-currency-code.js'
-import AjvSemver from '../src/validators/ajv-semver.js'
-import AjvLocale from '../src/validators/ajv-locale-code.js'
-import AjvUuid from '../src/validators/ajv-uuid.js'
+import AjvCurrencyCode from '@socketkit/ajv-currency-code'
+import AjvSemver from '@socketkit/ajv-semver'
+import AjvLocale from '@socketkit/ajv-locale-code'
+import AjvUuid from '@socketkit/ajv-uuid'
 
 const formatter = new Ajv.default({ allErrors: false, strict: false })
 

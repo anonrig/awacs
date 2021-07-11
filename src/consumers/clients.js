@@ -1,12 +1,12 @@
 import grpc from '@grpc/grpc-js'
 
-import * as Validate from '../validators/validate.js'
+import { uuid } from '@socketkit/ajv-uuid'
 import * as Clients from '../pg/client.js'
 
 export async function findAll(ctx) {
   const { limit, cursor } = ctx.req
 
-  if (!Validate.uuid(ctx.req.account_id)) {
+  if (!uuid(ctx.req.account_id)) {
     const error = new Error('Invalid account_id')
     error.code = grpc.status.FAILED_PRECONDITION
     throw error
@@ -21,7 +21,7 @@ export async function findAll(ctx) {
 export async function findOne(ctx) {
   const { account_id, application_id, client_id } = ctx.req
 
-  if (!Validate.uuid(account_id)) {
+  if (!uuid(account_id)) {
     const error = new Error('Invalid account_id')
     error.code = grpc.status.FAILED_PRECONDITION
     throw error
