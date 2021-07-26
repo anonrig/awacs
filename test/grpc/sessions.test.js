@@ -84,19 +84,6 @@ test.serial('should find all sessions', async (t) => {
   t.falsy(response.cursor)
 })
 
-test.cb('findAll should check for valid account_id', (t) => {
-  t.plan(3)
-
-  const { Sessions } = t.context.clients
-
-  Sessions.findAll({ account_id: 'ahmet' }, (error, response) => {
-    t.truthy(error)
-    t.is(error.message, '9 FAILED_PRECONDITION: Invalid account_id')
-    t.falsy(response)
-    t.end()
-  })
-})
-
 test.cb('findAll should limit the rows return', (t) => {
   const { Sessions } = t.context.clients
   const { account_id, application_id } = t.context

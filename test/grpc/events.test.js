@@ -38,17 +38,6 @@ test.cb('findAll should return rows', (t) => {
   })
 })
 
-test.cb('findAll should validate account_id', (t) => {
-  t.plan(2)
-  const { Events } = t.context.clients
-
-  Events.findAll({ account_id: 'test' }, (error) => {
-    t.truthy(error)
-    t.is(error.message, '9 FAILED_PRECONDITION: Invalid account_id')
-    t.end()
-  })
-})
-
 test('findAll should paginate with limit', async (t) => {
   const Events = promisifyAll(t.context.clients.Events)
   const Applications = promisifyAll(t.context.clients.Applications)

@@ -60,19 +60,6 @@ test('should find all clients', async (t) => {
   t.is(response.rows[0].account_id, account_id)
 })
 
-test.cb('findAll should check for valid account_id', (t) => {
-  t.plan(3)
-
-  const { Clients } = t.context.clients
-
-  Clients.findAll({ account_id: 'ahmet' }, (error, response) => {
-    t.truthy(error)
-    t.is(error.message, '9 FAILED_PRECONDITION: Invalid account_id')
-    t.falsy(response)
-    t.end()
-  })
-})
-
 test('should find a single client', async (t) => {
   const Clients = promisifyAll(t.context.clients.Clients)
   const payload = [{ name: 'app_open', timestamp: Date.now(), ...app_open }]

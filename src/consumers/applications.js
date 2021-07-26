@@ -1,67 +1,25 @@
-import grpc from '@grpc/grpc-js'
-
-import { uuid } from '@socketkit/ajv-uuid'
 import pg from '../pg/index.js'
 import * as Application from '../pg/application.js'
 
 export async function findAll(ctx) {
-  const { account_id } = ctx.req
-
-  if (!uuid(account_id)) {
-    const error = new Error('Invalid account_id')
-    error.code = grpc.status.FAILED_PRECONDITION
-    throw error
-  }
-
-  ctx.res = { rows: await Application.findAll({ account_id }) }
+  ctx.res = { rows: await Application.findAll(ctx.req) }
 }
 
 export async function findOne(ctx) {
-  const { account_id, application_id } = ctx.req
-
-  if (!uuid(account_id)) {
-    const error = new Error('Invalid account_id')
-    error.code = grpc.status.FAILED_PRECONDITION
-    throw error
-  }
-
-  ctx.res = { row: await Application.findOne({ account_id, application_id }) }
+  ctx.res = { row: await Application.findOne(ctx.req) }
 }
 
 export async function create(ctx) {
-  if (!uuid(ctx.req.account_id)) {
-    const error = new Error('Invalid account_id')
-    error.code = grpc.status.FAILED_PRECONDITION
-    throw error
-  }
-
   await pg.transaction((trx) => Application.create(ctx.req, trx))
-
   ctx.res = {}
 }
 
 export async function update(ctx) {
-  if (!uuid(ctx.req.account_id)) {
-    const error = new Error('Invalid account_id')
-    error.code = grpc.status.FAILED_PRECONDITION
-    throw error
-  }
-
   await Application.update(ctx.req)
-
   ctx.res = {}
 }
 
 export async function destroy(ctx) {
-  const { account_id, application_id } = ctx.req
-
-  if (!uuid(account_id)) {
-    const error = new Error('Invalid account_id')
-    error.code = grpc.status.FAILED_PRECONDITION
-    throw error
-  }
-
-  await Application.destroy({ account_id, application_id })
-
+  await Application.destroy(ctx.req)
   ctx.res = {}
 }
