@@ -25,9 +25,12 @@ const options = {
 const file = path.join(path.resolve(''), './src/protofiles/awacs.proto')
 const health = path.join(path.resolve(''), './src/protofiles/health.proto')
 
-const app = new Mali()
+const app = new Mali(
+  file,
+  ['Applications', 'Clients', 'Events', 'Sessions'],
+  options,
+)
 
-app.addService(file, ['Applications', 'Clients', 'Events', 'Sessions'], options)
 app.addService(health, 'Health', options)
 
 app.use(performancePlugin)
