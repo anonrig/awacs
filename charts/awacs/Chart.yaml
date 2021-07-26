@@ -1,8 +1,8 @@
 apiVersion: v2
-appVersion: "0.3.4"
+appVersion: "0.4.0"
 description: A Helm chart for Socketkit Awacs
 name: awacs
-version: 0.1.4
+version: 0.2.0
 type: application
 
 dependencies:
