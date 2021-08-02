@@ -58,6 +58,38 @@ export async function findOrCreate(
   return new_session
 }
 
+export function count({
+  account_id,
+  application_id,
+  client_id,
+  start_date,
+  end_date,
+}) {
+  return pg
+    .queryBuilder()
+    .count('*', { as: 'count' })
+    .from('sessions')
+    .where({ account_id })
+    .andWhere(function () {
+      if (application_id) {
+        this.where({ application_id })
+      }
+
+      if (client_id) {
+        this.where({ client_id })
+      }
+
+      if (start_date) {
+        this.where('started_at', '>', dayjs(start_date).toDate())
+      }
+
+      if (end_date) {
+        this.where('expired_at', '<=', dayjs(end_date).toDate())
+      }
+    })
+    .first()
+}
+
 export async function findAll(
   { account_id, application_id, client_id },
   { limit, cursor },

@@ -40,6 +40,8 @@ service Events {
 service Sessions {
   // Filter through the sessions
   rpc findAll (FindAllSessionsRequest) returns (SessionsResponse) {}
+  // Count sessions
+  rpc count (CountSessionsRequest) returns (CountResponse) {}
 }
 
 // Empty response
@@ -302,7 +304,22 @@ message CountClientsRequest {
   optional string application_id = 2;
 }
 
+// Count events request
 message CountEventsRequest {
+  // Account id
+  string account_id = 1;
+  // Optional application id for filtering
+  optional string application_id = 2;
+  // Optional client id for filtering
+  optional string client_id = 3;
+  // Optional start date for filtering
+  optional string start_date = 4;
+  // Optional end date for filtering
+  optional string end_date = 5;
+}
+
+// Count sessions request
+message CountSessionsRequest {
   // Account id
   string account_id = 1;
   // Optional application id for filtering

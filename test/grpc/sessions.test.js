@@ -82,6 +82,9 @@ test.serial('should find all sessions', async (t) => {
     t.is(row.client_id, client_id)
   })
   t.falsy(response.cursor)
+
+  const { count } = await Sessions.count({ account_id })
+  t.is(count, 3)
 })
 
 test.cb('findAll should limit the rows return', (t) => {

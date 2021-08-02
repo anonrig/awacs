@@ -8,3 +8,7 @@ export async function findAll(ctx) {
     cursor,
   })
 }
+
+export async function count(ctx) {
+  ctx.res = await Sessions.count(ctx.req)
+}
