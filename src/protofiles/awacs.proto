@@ -23,19 +23,21 @@ service Applications {
 
 service Clients {
   // Filter through the clients
-  rpc findAll(FindAllClientsRequest) returns (ClientsResponse) {}
+  rpc findAll (FindAllClientsRequest) returns (ClientsResponse) {}
   // Find a specific client by id
-  rpc findOne(ClientIdRequest) returns (ClientResponse) {}
+  rpc findOne (ClientIdRequest) returns (ClientResponse) {}
+  // Count unique clients
+  rpc count (CountClientsRequest) returns (CountResponse) {}
 }
 
 service Events {
   // Filter through the events
-  rpc findAll(FindAllEventsRequest) returns (EventsResponse) {}
+  rpc findAll (FindAllEventsRequest) returns (EventsResponse) {}
 }
 
 service Sessions {
   // Filter through the sessions
-  rpc findAll(FindAllSessionsRequest) returns (SessionsResponse) {}
+  rpc findAll (FindAllSessionsRequest) returns (SessionsResponse) {}
 }
 
 // Empty response
@@ -284,4 +286,12 @@ message ClientCursor {
 message CountResponse {
   // Counted distinct values as integer
   int32 count = 1;
+}
+
+// Count clients request
+message CountClientsRequest {
+  // Account id
+  string account_id = 1;
+  // Optional application id. Typically your bundle id (Ex. com.socket.app)
+  optional string application_id = 2;
 }

@@ -44,6 +44,20 @@ export function update(client, trx) {
     .transacting(trx)
 }
 
+export function count({ account_id, application_id }) {
+  return pg
+    .queryBuilder()
+    .countDistinct('client_id', { as: 'count' })
+    .from('clients')
+    .where({ account_id })
+    .andWhere(function () {
+      if (application_id) {
+        this.where({ application_id })
+      }
+    })
+    .first()
+}
+
 export async function findAll(
   { account_id, application_id },
   { limit, cursor },

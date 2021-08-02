@@ -58,6 +58,10 @@ test('should find all clients', async (t) => {
   t.is(response.rows.length, 2)
   t.is(response.rows[0].application_id, application_id)
   t.is(response.rows[0].account_id, account_id)
+
+  const count_response = await Clients.count({ account_id, application_id })
+  t.truthy(count_response.count)
+  t.is(count_response.count, 2)
 })
 
 test('should find a single client', async (t) => {

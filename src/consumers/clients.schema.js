@@ -15,6 +15,15 @@ export const findAll = {
   required: ['account_id'],
 }
 
+export const count = {
+  type: 'object',
+  properties: {
+    account_id: { type: 'string', format: 'uuid' },
+    application_id: { type: 'string' },
+  },
+  required: ['account_id'],
+}
+
 export const findOne = {
   type: 'object',
   properties: {

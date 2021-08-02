@@ -9,6 +9,10 @@ export async function findAll(ctx) {
   })
 }
 
+export async function count(ctx) {
+  ctx.res = await Clients.count(ctx.req)
+}
+
 export async function findOne(ctx) {
   const row = await Clients.findOne(ctx.req)
 
