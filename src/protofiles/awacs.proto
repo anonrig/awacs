@@ -33,6 +33,8 @@ service Clients {
 service Events {
   // Filter through the events
   rpc findAll (FindAllEventsRequest) returns (EventsResponse) {}
+  // Count events
+  rpc count (CountEventsRequest) returns (CountResponse) {}
 }
 
 service Sessions {
@@ -294,4 +296,17 @@ message CountClientsRequest {
   string account_id = 1;
   // Optional application id. Typically your bundle id (Ex. com.socket.app)
   optional string application_id = 2;
+}
+
+message CountEventsRequest {
+  // Account id
+  string account_id = 1;
+  // Optional application id for filtering
+  optional string application_id = 2;
+  // Optional client id for filtering
+  optional string client_id = 3;
+  // Optional start date for filtering
+  optional string start_date = 4;
+  // Optional end date for filtering
+  optional string end_date = 5;
 }

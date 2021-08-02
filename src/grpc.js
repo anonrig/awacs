@@ -1,6 +1,7 @@
 import Mali from 'mali'
 import path from 'path'
-import { addSchemas } from 'mali-ajv'
+import MaliAjv, { addSchemas } from 'mali-ajv'
+import AjvFormats from 'ajv-formats'
 
 import performancePlugin from './grpc.performance.js'
 import * as Applications from './consumers/applications.js'
@@ -13,6 +14,8 @@ import * as applications from './consumers/applications.schema.js'
 import * as clients from './consumers/clients.schema.js'
 import * as events from './consumers/events.schema.js'
 import * as sessions from './consumers/sessions.schema.js'
+
+AjvFormats(MaliAjv)
 
 const logger = Logger.create().withScope('grpc')
 const options = {

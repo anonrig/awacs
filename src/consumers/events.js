@@ -10,3 +10,7 @@ export async function findAll(ctx) {
     end_date,
   })
 }
+
+export async function count(ctx) {
+  ctx.res = await Events.count(ctx.req)
+}

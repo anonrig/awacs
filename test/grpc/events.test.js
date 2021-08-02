@@ -38,6 +38,20 @@ test.cb('findAll should return rows', (t) => {
   })
 })
 
+test.cb('count should count distinct events', (t) => {
+  t.plan(3)
+
+  const { Events } = t.context.clients
+  const account_id = randomUUID()
+
+  Events.count({ account_id }, (error, response) => {
+    t.is(error, null)
+    t.truthy(response)
+    t.is(response.count, 0)
+    t.end()
+  })
+})
+
 test('findAll should paginate with limit', async (t) => {
   const Events = promisifyAll(t.context.clients.Events)
   const Applications = promisifyAll(t.context.clients.Applications)
