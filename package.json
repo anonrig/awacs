@@ -58,6 +58,7 @@
     "@babel/core": "^7.14.8",
     "@babel/eslint-parser": "^7.14.7",
     "@babel/plugin-syntax-top-level-await": "^7.14.5",
+    "@types/faker": "^5.5.7",
     "ava": "^3.15.0",
     "axios": "^0.21.1",
     "c8": "^7.7.3",
@@ -67,6 +68,7 @@
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-security": "^1.4.0",
+    "faker": "^5.5.3",
     "nodemon": "^2.0.12",
     "prettier": "^2.3.2",
     "quibble": "^0.6.5"

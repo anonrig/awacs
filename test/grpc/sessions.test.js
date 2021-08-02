@@ -1,52 +1,19 @@
 import test from 'ava'
 import { randomUUID } from 'crypto'
 import dayjs from 'dayjs'
-import {
-  getRandomPort,
-  getGrpcClients,
-  promisifyAll,
-  sendEventRequest,
-} from '../helper.js'
-import private_server from '../../src/grpc.js'
+import { getRandomPort, getGrpcClients, sendEventRequest } from '../helper.js'
 import { app_open } from '../seeds.js'
+import { createApplication } from '../actions.js'
 
-test.before(async (t) => {
-  const account_id = randomUUID()
-  const application_id = randomUUID()
+test('should find all sessions', async (t) => {
   const port = getRandomPort()
-
-  await private_server.start(`0.0.0.0:${port}`)
-  t.context.private_server = private_server
-  t.context.clients = getGrpcClients(port)
-  t.context.account_id = account_id
-  t.context.application_id = application_id
-
-  const Applications = promisifyAll(t.context.clients.Applications)
-
-  await Applications.create({
+  const { Applications, Sessions } = getGrpcClients(port)
+  const { application_id, account_id } = await createApplication(t, port)
+  const { row: application } = await Applications.findOne({
     account_id,
     application_id,
-    title: 'Test Application',
-    session_timeout: 60,
   })
-
-  t.context.application = (
-    await Applications.findOne({
-      account_id,
-      application_id,
-    })
-  ).row
-})
-
-test.after.always(async (t) => {
-  const { account_id, application_id } = t.context
-  const Applications = promisifyAll(t.context.clients.Applications)
-  await Applications.destroy({ account_id, application_id })
-  await t.context.private_server.close()
-})
-
-test.serial('should find all sessions', async (t) => {
-  const Sessions = promisifyAll(t.context.clients.Sessions)
+  const client_id = randomUUID()
   const payload = [
     { name: 'app_open', timestamp: dayjs().unix() * 1000, ...app_open },
     {
@@ -60,9 +27,6 @@ test.serial('should find all sessions', async (t) => {
       ...app_open,
     },
   ]
-
-  const { account_id, application_id, application } = t.context
-  const client_id = randomUUID()
 
   const { body, statusCode } = await sendEventRequest(
     application,
@@ -87,23 +51,37 @@ test.serial('should find all sessions', async (t) => {
   t.is(count, 3)
 })
 
-test.cb('findAll should limit the rows return', (t) => {
-  const { Sessions } = t.context.clients
-  const { account_id, application_id } = t.context
+test('should limit on Sessions.findAll', async (t) => {
+  const port = getRandomPort()
+  const { Applications, Sessions } = getGrpcClients(port)
+  const { account_id, application_id } = await createApplication(t, port)
+  const { row: application } = await Applications.findOne({
+    account_id,
+    application_id,
+  })
+  const client_id = randomUUID()
+  const payload = [
+    { name: 'app_open', timestamp: dayjs().unix() * 1000, ...app_open },
+    {
+      name: 'app_open',
+      timestamp: dayjs().subtract(1, 'week').unix() * 1000,
+      ...app_open,
+    },
+    {
+      name: 'app_open',
+      timestamp: dayjs().subtract(2, 'week').unix() * 1000,
+      ...app_open,
+    },
+  ]
 
-  Sessions.findAll({ account_id, limit: 2 }, (error, response) => {
-    t.falsy(error)
-    t.truthy(response)
-    t.is(response.rows.length, 2)
-    response.rows.forEach((row) => {
-      t.is(row.application_id, application_id)
-      t.is(row.account_id, account_id)
-    })
-    t.truthy(response.cursor)
-    t.is(
-      response.cursor.expired_at,
-      response.rows[response.rows.length - 1].expired_at,
-    )
-    t.end()
+  await sendEventRequest(application, client_id, payload)
+
+  const { rows, cursor } = await Sessions.findAll({ account_id, limit: 2 })
+
+  t.is(cursor.expired_at, rows[rows.length - 1].expired_at)
+  t.is(rows.length, 2)
+  rows.forEach((row) => {
+    t.is(row.application_id, application_id)
+    t.is(row.account_id, account_id)
   })
 })

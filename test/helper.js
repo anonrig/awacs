@@ -8,14 +8,14 @@ import { promisify } from 'util'
 import config from '../src/config.js'
 import * as Signing from '../src/signing.js'
 
+import AjvFormats from 'ajv-formats'
 import AjvCurrencyCode from '@socketkit/ajv-currency-code'
 import AjvSemver from '@socketkit/ajv-semver'
 import AjvLocale from '@socketkit/ajv-locale-code'
-import AjvUuid from '@socketkit/ajv-uuid'
 
 const formatter = new Ajv.default({ allErrors: false, strict: false })
 
-AjvUuid(formatter)
+AjvFormats(formatter)
 AjvLocale(formatter)
 AjvSemver(formatter)
 AjvCurrencyCode(formatter)
@@ -25,7 +25,7 @@ export const ajv = formatter
 export function promisifyAll(subscriber) {
   const to = {}
   for (const k in subscriber) {
-    if (typeof subscriber[k] != 'function') continue
+    if (typeof subscriber[k] !== 'function') continue
     to[k] = promisify(subscriber[k].bind(subscriber))
   }
   return to
@@ -65,6 +65,7 @@ export function getGrpcClients(port = config.grpc_port) {
     enums: String,
     defaults: true,
     oneofs: true,
+    includeDirs: [path.join(path.resolve('.'), 'src/protofiles/awacs')],
   }
 
   const { Applications, Clients, Events, Sessions } =
@@ -73,9 +74,13 @@ export function getGrpcClients(port = config.grpc_port) {
     )
 
   return {
-    Applications: new Applications(url, grpc.credentials.createInsecure()),
-    Clients: new Clients(url, grpc.credentials.createInsecure()),
-    Events: new Events(url, grpc.credentials.createInsecure()),
-    Sessions: new Sessions(url, grpc.credentials.createInsecure()),
+    Applications: promisifyAll(
+      new Applications(url, grpc.credentials.createInsecure()),
+    ),
+    Clients: promisifyAll(new Clients(url, grpc.credentials.createInsecure())),
+    Events: promisifyAll(new Events(url, grpc.credentials.createInsecure())),
+    Sessions: promisifyAll(
+      new Sessions(url, grpc.credentials.createInsecure()),
+    ),
   }
 }

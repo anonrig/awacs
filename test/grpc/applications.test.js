@@ -1,209 +1,76 @@
 import test from 'ava'
-import { randomUUID } from 'crypto'
 import { getRandomPort, getGrpcClients } from '../helper.js'
-import server from '../../src/grpc.js'
+import { createApplication } from '../actions.js'
 
-test.before(async (t) => {
-  t.context.server = server
+test('should create an application', async (t) => {
+  t.truthy(await createApplication(t, getRandomPort()))
+})
+
+test('should find all applications', async (t) => {
   const port = getRandomPort()
-  await server.start(`0.0.0.0:${port}`)
-  t.context.server = server
-  t.context.clients = getGrpcClients(port)
-  t.context.port = port
-})
+  const { Applications } = getGrpcClients(port)
 
-test.after.always(async (t) => {
-  await t.context.server.close()
-})
+  const { account_id, application_id, application_title } =
+    await createApplication(t, port)
 
-test.cb('should create an application', (t) => {
-  t.plan(7)
+  const response = await Applications.findAll({ account_id })
 
-  const { Applications } = t.context.clients
-  const account_id = randomUUID()
-  const application_id = randomUUID()
+  t.is(response.rows.length, 1)
+  t.falsy(response.cursor)
 
-  Applications.create(
-    {
-      account_id,
-      application_id,
-      title: 'Test Application',
-      session_timeout: 60,
-    },
-    (error) => {
-      t.is(error, null)
-
-      Applications.findOne(
-        { account_id, application_id },
-        (error, response) => {
-          t.is(error, null)
-          t.is(response.row.account_id, account_id)
-          t.is(response.row.application_id, application_id)
-          t.is(response.row.title, 'Test Application')
-          t.is(response.row.session_timeout, 60)
-
-          Applications.destroy({ account_id, application_id }, (error) => {
-            t.is(error, null)
-            t.end()
-          })
-        },
-      )
-    },
-  )
-})
-
-test.cb('should find all applications', (t) => {
-  t.plan(6)
-
-  const { Applications } = t.context.clients
-  const account_id = randomUUID()
-  const application_id = randomUUID()
-
-  Applications.create(
-    {
-      account_id,
-      application_id,
-      title: 'Testing findAll',
-      session_timeout: 30,
-    },
-    (error) => {
-      t.falsy(error)
-
-      Applications.findAll({ account_id }, (error, response) => {
-        t.falsy(error)
-        t.truthy(Array.isArray(response.rows))
-        response.rows.forEach((row) => {
-          t.is(row.account_id, account_id)
-          t.is(row.application_id, application_id)
-        })
-
-        Applications.destroy({ account_id, application_id }, (error) => {
-          t.falsy(error)
-          t.end()
-        })
-      })
-    },
-  )
-})
-
-test.cb('should return count of applications', (t) => {
-  t.plan(5)
-
-  const { Applications } = t.context.clients
-  const account_id = randomUUID()
-  const application_id = randomUUID()
-
-  Applications.create(
-    {
-      account_id,
-      application_id,
-      title: 'Testing Applications.count',
-      session_timeout: 30,
-    },
-    (error) => {
-      t.falsy(error)
-
-      Applications.count({ account_id }, (error, response) => {
-        t.falsy(error)
-        t.truthy(response)
-        t.is(response.count, 1)
-
-        Applications.destroy({ account_id, application_id }, (error) => {
-          t.falsy(error)
-          t.end()
-        })
-      })
-    },
-  )
-})
-
-test.cb('should find one application', (t) => {
-  t.plan(11)
-
-  const { Applications } = t.context.clients
-  const account_id = randomUUID()
-  const application_id = randomUUID()
-
-  Applications.findOne({ account_id, application_id }, (error, response) => {
-    t.falsy(error)
-    t.truthy(response)
-    t.is(response.row, null)
-
-    Applications.create(
-      {
-        account_id,
-        application_id,
-        title: 'Testing findOne',
-        session_timeout: 70,
-      },
-      (error, response) => {
-        t.falsy(error)
-        t.truthy(response)
-
-        Applications.findOne(
-          { account_id, application_id },
-          (error, response) => {
-            t.falsy(error)
-            t.truthy(response)
-            t.truthy(response.row)
-            t.is(response.row.account_id, account_id)
-            t.is(response.row.application_id, application_id)
-
-            Applications.destroy({ account_id, application_id }, (error) => {
-              t.falsy(error)
-              t.end()
-            })
-          },
-        )
-      },
-    )
+  response.rows.forEach((row) => {
+    t.is(row.account_id, account_id)
+    t.is(row.application_id, application_id)
+    t.is(row.title, application_title)
+    t.is(row.session_timeout, 30)
   })
 })
 
-test.cb('should update an application', (t) => {
-  t.plan(8)
+test('should count all applications', async (t) => {
+  const port = getRandomPort()
+  const { Applications } = getGrpcClients(port)
+  const { account_id } = await createApplication(t, port)
 
-  const { Applications } = t.context.clients
-  const account_id = randomUUID()
-  const application_id = randomUUID()
+  const { count } = await Applications.count({ account_id })
 
-  Applications.create(
-    {
-      account_id,
-      application_id,
-      title: 'Update title 1',
-      session_timeout: 40,
-    },
-    (error) => {
-      t.falsy(error)
+  t.is(count, 1)
+})
 
-      Applications.update(
-        {
-          account_id,
-          application_id,
-          title: 'Update title 2',
-          session_timeout: 50,
-        },
-        (error) => {
-          t.falsy(error)
+test('should find one application', async (t) => {
+  const port = getRandomPort()
+  const { Applications } = getGrpcClients(port)
+  const { account_id, application_id, application_title } =
+    await createApplication(t, port)
+  const { row: application } = await Applications.findOne({
+    account_id,
+    application_id,
+  })
 
-          Applications.findOne(
-            { account_id, application_id },
-            (error, response) => {
-              t.falsy(error)
-              t.is(response.row.account_id, account_id)
-              t.is(response.row.application_id, application_id)
-              t.is(response.row.title, 'Update title 2')
-              t.is(response.row.session_timeout, 50)
+  t.is(application.account_id, account_id)
+  t.is(application.application_id, application_id)
+  t.is(application.title, application_title)
+  t.is(application.session_timeout, 30)
+})
 
-              Applications.destroy({ account_id, application_id }, (error) => {
-                t.falsy(error)
-                t.end()
-              })
-            },
-          )
-        },
-      )
-    },
-  )
+test('should update an application', async (t) => {
+  const port = getRandomPort()
+  const { Applications } = getGrpcClients(port)
+  const { account_id, application_id } = await createApplication(t, port)
+
+  await Applications.update({
+    account_id,
+    application_id,
+    title: 'Updated title',
+    session_timeout: 50,
+  })
+
+  const { row: application } = await Applications.findOne({
+    account_id,
+    application_id,
+  })
+
+  t.is(application.account_id, account_id)
+  t.is(application.application_id, application_id)
+  t.is(application.title, 'Updated title')
+  t.is(application.session_timeout, 50)
 })

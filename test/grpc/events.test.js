@@ -1,70 +1,30 @@
 import test from 'ava'
 import { randomUUID } from 'crypto'
 import dayjs from 'dayjs'
-import {
-  getRandomPort,
-  getGrpcClients,
-  sendEventRequest,
-  promisifyAll,
-} from '../helper.js'
-import server from '../../src/grpc.js'
+import { getRandomPort, getGrpcClients, sendEventRequest } from '../helper.js'
 import { app_open } from '../seeds.js'
+import { createApplication } from '../actions.js'
 
-test.before(async (t) => {
-  t.context.server = server
+test('should find all events', async (t) => {
   const port = getRandomPort()
-  await server.start(`0.0.0.0:${port}`)
-  t.context.server = server
-  t.context.clients = getGrpcClients(port)
-  t.context.port = port
+  const { Events } = getGrpcClients(port)
+  await createApplication(t, port)
+  const { rows } = await Events.findAll({ account_id: randomUUID() })
+  t.deepEqual(rows, [])
 })
 
-test.after.always(async (t) => {
-  await t.context.server.close()
-})
-
-test.cb('findAll should return rows', (t) => {
-  t.plan(4)
-
-  const { Events } = t.context.clients
-  const account_id = randomUUID()
-
-  Events.findAll({ account_id }, (error, response) => {
-    t.is(error, null)
-    t.truthy(response)
-    t.truthy(Array.isArray(response.rows))
-    t.falsy(response.cursor)
-    t.end()
-  })
-})
-
-test.cb('count should count distinct events', (t) => {
-  t.plan(3)
-
-  const { Events } = t.context.clients
-  const account_id = randomUUID()
-
-  Events.count({ account_id }, (error, response) => {
-    t.is(error, null)
-    t.truthy(response)
-    t.is(response.count, 0)
-    t.end()
-  })
+test('should count all events', async (t) => {
+  const port = getRandomPort()
+  const { Events } = getGrpcClients(port)
+  const { account_id } = await createApplication(t, port)
+  const { count } = await Events.count({ account_id })
+  t.is(count, 0)
 })
 
 test('findAll should paginate with limit', async (t) => {
-  const Events = promisifyAll(t.context.clients.Events)
-  const Applications = promisifyAll(t.context.clients.Applications)
-  const account_id = randomUUID()
-  const application_id = randomUUID()
-
-  await Applications.create({
-    account_id,
-    application_id,
-    title: 'Test Application',
-    session_timeout: 60,
-  })
-
+  const port = getRandomPort()
+  const { Applications, Events } = getGrpcClients(port)
+  const { account_id, application_id } = await createApplication(t, port)
   const { row: application } = await Applications.findOne({
     account_id,
     application_id,
