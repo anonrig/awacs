@@ -277,7 +277,7 @@ message SessionCursor {
 // Client pagination cursor
 message ClientCursor {
   // Creation timestamp
-  string created_at = 2;
+  string created_at = 1;
 }
 
 // Count response
