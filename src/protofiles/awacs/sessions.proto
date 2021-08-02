@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+// Session
+message Session {
+  // Account id
+  string account_id = 1;
+  // Application id
+  string application_id = 2;
+  // Client id
+  string client_id = 3;
+  // Session start timestamp
+  string started_at = 4;
+  // Session expired (or will be) timestamp
+  string expired_at = 5;
+}
+
+// Session pagination cursor
+message SessionCursor {
+  // Expired timestamp
+  string expired_at = 1;
+}
+
+// Find all sessions request
+message FindAllSessionsRequest {
+  // Account id
+  string account_id = 1;
+  // Optional limit for limiting the result
+  optional int32 limit = 2;
+  // Optional application id. Typically your bundle id (Ex. com.socket.app)
+  optional string application_id = 3;
+  // Optional client id (available for filtering)
+  optional string client_id = 4;
+  // Optional cursor for pagination
+  optional SessionCursor cursor = 5;
+  // Optional start date for filtering
+  optional string start_date = 6;
+  // Optional end date for filtering
+  optional string end_date = 7;
+}
+
+// Count sessions request
+message CountSessionsRequest {
+  // Account id
+  string account_id = 1;
+  // Optional application id for filtering
+  optional string application_id = 2;
+  // Optional client id for filtering
+  optional string client_id = 3;
+  // Optional start date for filtering
+  optional string start_date = 4;
+  // Optional end date for filtering
+  optional string end_date = 5;
+}
+
+// Sessions response
+message SessionsResponse {
+  repeated Session rows = 1;
+  // Optional cursor available for pagination
+  optional SessionCursor cursor = 2;
+}

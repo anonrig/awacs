@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+// Client
+message Client {
+  // Account id
+  string account_id = 1;
+  // Application id
+  string application_id = 2;
+  // Client id
+  string client_id = 3;
+  // Unique client id that can defined by the developer
+  optional string distinct_id = 4;
+  // Country id (Ex: us)
+  string country_id = 5;
+  // Device locale (Ex: en-US)
+  string device_locale = 6;
+  // Device manufacturer
+  string device_manufacturer = 7;
+  // Device platform
+  string device_platform = 8;
+  // Device type
+  string device_type = 9;
+  // Device screen height
+  int32 device_height = 10;
+  // Device screen width
+  int32 device_width = 11;
+  // Optional device carrier information
+  optional string device_carrier = 12;
+  // Operating System Version
+  string os_name = 13;
+  // Optional watch model & version
+  optional string watch_model = 14;
+  // Application build number
+  int32 application_build_number = 15;
+  // Application version (Ex: 1.0.0)
+  string application_version = 16;
+  // Library version
+  string library_version = 17;
+  // Optional device push token
+  optional string push_token = 18;
+  // Push token validity
+  bool is_push_token_valid = 19;
+  // Available for GDPR
+  bool is_opt_out = 20;
+  // Optional additional properties defined by the developer
+  repeated CustomProperties additional_properties = 21;
+  // Device creation time
+  string created_at = 22;
+  // Device last modified time
+  string updated_at = 23;
+}
+
+// Client pagination cursor
+message ClientCursor {
+  // Creation timestamp
+  string created_at = 1;
+}
+
+// Request client of an application request with account id.
+message ClientIdRequest {
+  // Account id
+  string account_id = 1;
+  // Application id. Typically your bundle id (Ex. com.socketkit.app)
+  string application_id = 2;
+  // Client id
+  string client_id = 3;
+}
+
+// Find all clients
+message FindAllClientsRequest {
+  // Account id
+  string account_id = 1;
+  // Optional limit for limiting the result
+  optional int32 limit = 2;
+  // Optional application id. Typically your bundle id (Ex. com.socket.app)
+  optional string application_id = 3;
+  // Optional cursor for pagination
+  optional ClientCursor cursor = 4;
+}
+
+// Count clients request
+message CountClientsRequest {
+  // Account id
+  string account_id = 1;
+  // Optional application id. Typically your bundle id (Ex. com.socket.app)
+  optional string application_id = 2;
+}
+
+// Clients pagination response
+message ClientsResponse {
+  repeated Client rows = 1;
+  // Optional cursor available for pagination
+  optional ClientCursor cursor = 2;
+}
+
+// Client response
+message ClientResponse {
+  Client row = 1;
+}

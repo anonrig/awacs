@@ -24,6 +24,7 @@ const options = {
   enums: String,
   defaults: true,
   oneofs: true,
+  includeDirs: [path.join(path.resolve(''), './src/protofiles/awacs')],
 }
 const file = path.join(path.resolve(''), './src/protofiles/awacs.proto')
 const health = path.join(path.resolve(''), './src/protofiles/health.proto')
