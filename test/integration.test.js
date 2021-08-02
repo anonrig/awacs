@@ -3,47 +3,18 @@ import { randomUUID } from 'crypto'
 import dayjs from 'dayjs'
 
 import { getRandomPort, getGrpcClients, sendEventRequest } from './helper.js'
-import private_server from '../src/grpc.js'
 import { app_open } from './seeds.js'
-
-test.before(async (t) => {
-  const account_id = randomUUID()
-  const application_id = randomUUID()
-  const port = getRandomPort()
-  const clients = getGrpcClients(port)
-
-  await private_server.start(`0.0.0.0:${port}`)
-  t.context.private_server = private_server
-  t.context.clients = clients
-  t.context.account_id = account_id
-  t.context.application_id = application_id
-
-  await clients.Applications.create({
-    account_id,
-    application_id,
-    title: 'Test Application',
-    session_timeout: 60,
-  })
-
-  t.context.application = (
-    await clients.Applications.findOne({
-      account_id,
-      application_id,
-    })
-  ).row
-})
-
-test.after.always(async (t) => {
-  const { account_id, application_id } = t.context
-  const { Applications } = t.context.clients
-  await Applications.destroy({ account_id, application_id })
-  await t.context.private_server.close()
-})
+import { createApplication } from './actions.js'
 
 test('public api should accept first_app_open requests', async (t) => {
+  const port = getRandomPort()
+  const { Applications, Events } = getGrpcClients(port)
+  const { application_id, account_id } = await createApplication(t, port)
+  const { row: application } = await Applications.findOne({
+    account_id,
+    application_id,
+  })
   const client_id = randomUUID()
-  const { Events } = t.context.clients
-  const { application, account_id } = t.context
   const payload = [{ name: 'app_open', timestamp: Date.now(), ...app_open }]
 
   await sendEventRequest(application, client_id, payload)
@@ -64,8 +35,14 @@ test('public api should accept first_app_open requests', async (t) => {
 })
 
 test('public api should accept set_client requests', async (t) => {
+  const port = getRandomPort()
+  const { Applications, Clients } = getGrpcClients(port)
+  const { application_id, account_id } = await createApplication(t, port)
+  const { row: application } = await Applications.findOne({
+    account_id,
+    application_id,
+  })
   const client_id = randomUUID()
-  const { application, account_id } = t.context
   const payload = [
     {
       name: 'app_open',
@@ -76,10 +53,9 @@ test('public api should accept set_client requests', async (t) => {
 
   await sendEventRequest(application, client_id, payload)
 
-  const { Clients } = t.context.clients
   const client = await Clients.findOne({
     account_id,
-    application_id: application.application_id,
+    application_id,
     client_id,
   })
 
@@ -108,8 +84,14 @@ test('public api should accept set_client requests', async (t) => {
 })
 
 test('public api should accept in_app_purchase requests', async (t) => {
+  const port = getRandomPort()
+  const { Applications, Events } = getGrpcClients(port)
+  const { application_id, account_id } = await createApplication(t, port)
+  const { row: application } = await Applications.findOne({
+    account_id,
+    application_id,
+  })
   const client_id = randomUUID()
-  const { application, account_id } = t.context
   const payload = [
     {
       name: 'app_open',
@@ -128,7 +110,6 @@ test('public api should accept in_app_purchase requests', async (t) => {
 
   await sendEventRequest(application, client_id, payload)
 
-  const { Events } = t.context.clients
   const events = await Events.findAll({ account_id, client_id })
   const event = events.rows.find((r) => r.title === 'in_app_purchase')
   t.truthy(event)
@@ -141,8 +122,14 @@ test('public api should accept in_app_purchase requests', async (t) => {
 })
 
 test('public api should accept custom requests', async (t) => {
+  const port = getRandomPort()
+  const { Applications, Events } = getGrpcClients(port)
+  const { application_id, account_id } = await createApplication(t, port)
+  const { row: application } = await Applications.findOne({
+    account_id,
+    application_id,
+  })
   const client_id = randomUUID()
-  const { application, account_id } = t.context
   const payload = [
     {
       name: 'app_open',
@@ -158,7 +145,6 @@ test('public api should accept custom requests', async (t) => {
 
   await sendEventRequest(application, client_id, payload)
 
-  const { Events } = t.context.clients
   const events = await Events.findAll({ account_id, client_id })
   t.truthy(
     events.rows[0].properties.find(
