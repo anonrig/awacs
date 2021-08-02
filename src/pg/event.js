@@ -63,10 +63,15 @@ export function count({
     .first()
 }
 
-export async function findAll(
-  { account_id, application_id, client_id },
-  { limit, cursor, start_date, end_date },
-) {
+export async function findAll({
+  account_id,
+  application_id,
+  client_id,
+  limit = 100,
+  cursor,
+  start_date,
+  end_date,
+}) {
   const rows = await pg
     .queryBuilder()
     .select('*')

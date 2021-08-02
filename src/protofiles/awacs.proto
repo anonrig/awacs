@@ -100,6 +100,10 @@ message FindAllEventsRequest {
   optional string client_id = 4;
   // Optional cursor for pagination
   optional EventCursor cursor = 5;
+  // Optional start date for filtering
+  optional string start_date = 6;
+  // Optional end date for filtering
+  optional string end_date = 7;
 }
 
 message FindAllSessionsRequest {
