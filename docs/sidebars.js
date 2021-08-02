@@ -5,7 +5,22 @@ module.exports = {
     {
       type: 'category',
       label: 'Definitions',
-      items: [{ type: 'doc', id: 'proto/awacs.proto' }],
+      collapsed: false,
+      items: [
+        { type: 'doc', id: 'proto/awacs.proto' },
+        { type: 'doc', id: 'proto/health.proto' },
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Services',
+      collapsed: false,
+      items: [
+        { type: 'doc', id: 'proto/awacs/applications.proto' },
+        { type: 'doc', id: 'proto/awacs/clients.proto' },
+        { type: 'doc', id: 'proto/awacs/events.proto' },
+        { type: 'doc', id: 'proto/awacs/sessions.proto' },
+      ],
     },
   ],
   docs: [
