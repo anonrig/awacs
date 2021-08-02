@@ -11,6 +11,8 @@ service Applications {
   rpc findAll (AccountIdRequest) returns (ApplicationsResponse) {}
   // Find a specific application by id
   rpc findOne (ApplicationIdRequest) returns (ApplicationResponse) {}
+  // Count unique applications
+  rpc count (AccountIdRequest) returns (CountResponse) {}
   // Create a new application
   rpc create (ApplicationRequest) returns (Empty) {}
   // Update an existing application
@@ -276,4 +278,10 @@ message SessionCursor {
 message ClientCursor {
   // Creation timestamp
   string created_at = 2;
+}
+
+// Count response
+message CountResponse {
+  // Counted distinct values as integer
+  int32 count = 1;
 }

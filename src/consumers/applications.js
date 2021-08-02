@@ -5,6 +5,10 @@ export async function findAll(ctx) {
   ctx.res = { rows: await Application.findAll(ctx.req) }
 }
 
+export async function count(ctx) {
+  ctx.res = await Application.count(ctx.req)
+}
+
 export async function findOne(ctx) {
   ctx.res = { row: await Application.findOne(ctx.req) }
 }

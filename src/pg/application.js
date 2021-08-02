@@ -25,6 +25,15 @@ export function findAll({ account_id }) {
     .where({ account_id })
 }
 
+export function count({ account_id }) {
+  return pg
+    .queryBuilder()
+    .countDistinct('application_id', { as: 'count' })
+    .from('applications')
+    .where({ account_id })
+    .first()
+}
+
 export function findOne({ account_id, application_id }) {
   return pg
     .queryBuilder()

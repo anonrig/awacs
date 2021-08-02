@@ -86,6 +86,37 @@ test.cb('should find all applications', (t) => {
   )
 })
 
+test.cb('should return count of applications', (t) => {
+  t.plan(5)
+
+  const { Applications } = t.context.clients
+  const account_id = randomUUID()
+  const application_id = randomUUID()
+
+  Applications.create(
+    {
+      account_id,
+      application_id,
+      title: 'Testing Applications.count',
+      session_timeout: 30,
+    },
+    (error) => {
+      t.falsy(error)
+
+      Applications.count({ account_id }, (error, response) => {
+        t.falsy(error)
+        t.truthy(response)
+        t.is(response.count, 1)
+
+        Applications.destroy({ account_id, application_id }, (error) => {
+          t.falsy(error)
+          t.end()
+        })
+      })
+    },
+  )
+})
+
 test.cb('should find one application', (t) => {
   t.plan(11)
 
