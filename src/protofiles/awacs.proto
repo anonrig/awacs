@@ -6,8 +6,8 @@
  */
 syntax = "proto3";
 
-import "awacs/applications.proto";
 import "awacs/clients.proto";
+import "awacs/applications.proto";
 import "awacs/events.proto";
 import "awacs/sessions.proto";
 
@@ -51,14 +51,6 @@ service Sessions {
 
 // Empty response
 message Empty {}
-
-// Custom properties defined by the developer or the integration
-message CustomProperties {
-  // Property key
-  string key = 1;
-  // Property value
-  string value = 2;
-}
 
 // Count response
 message CountResponse {

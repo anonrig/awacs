@@ -97,3 +97,12 @@ message ClientsResponse {
 message ClientResponse {
   Client row = 1;
 }
+
+// Custom properties defined by the developer or the integration
+message CustomProperties {
+  // Property key
+  string key = 1;
+  // Property value
+  string value = 2;
+}
+

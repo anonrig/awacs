@@ -36,7 +36,7 @@ jobs:
 
       - name: "Generate Proto JSON"
         run: |
-          protoc --doc_out=$GITHUB_WORKSPACE/docs/static --doc_opt=json,proto_workspace.json --proto_path=$GITHUB_WORKSPACE/src/protofiles $GITHUB_WORKSPACE/src/protofiles/awacs.proto $GITHUB_WORKSPACE/src/protofiles/awacs/*.proto
+          protoc --doc_out=$GITHUB_WORKSPACE/docs/static --doc_opt=json,proto_workspace.json --proto_path=$GITHUB_WORKSPACE/src/protofiles $GITHUB_WORKSPACE/src/protofiles/**/*.proto
 
       - name: "Install dependencies"
         run: |
