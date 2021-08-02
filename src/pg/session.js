@@ -90,10 +90,15 @@ export function count({
     .first()
 }
 
-export async function findAll(
-  { account_id, application_id, client_id },
-  { limit, cursor },
-) {
+export async function findAll({
+  account_id,
+  application_id,
+  client_id,
+  limit = 100,
+  cursor,
+  start_date,
+  end_date,
+}) {
   const rows = await pg
     .queryBuilder()
     .select('*')
@@ -116,6 +121,14 @@ export async function findAll(
         }
 
         this.where('expired_at', '<', dayjs(expired_at).toDate())
+      }
+
+      if (start_date) {
+        this.where('started_at', '>', dayjs(start_date).toDate())
+      }
+
+      if (end_date) {
+        this.where('expired_at', '<=', dayjs(end_date).toDate())
       }
     })
     .limit(limit)

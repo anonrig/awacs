@@ -12,6 +12,8 @@ export const findAll = {
       },
       required: ['expired_at'],
     },
+    start_date: { type: 'string', format: 'date' },
+    end_date: { type: 'string', format: 'date' },
   },
   required: ['account_id'],
 }
