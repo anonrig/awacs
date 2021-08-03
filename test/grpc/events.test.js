@@ -21,6 +21,41 @@ test('should count all events', async (t) => {
   t.is(count, 0)
 })
 
+test('findAll should include client information', async (t) => {
+  const port = getRandomPort()
+  const { Applications, Events } = getGrpcClients(port)
+  const { account_id, application_id } = await createApplication(t, port)
+  const { row: application } = await Applications.findOne({
+    account_id,
+    application_id,
+  })
+
+  const clients = [randomUUID(), randomUUID()]
+
+  await sendEventRequest(application, clients[0], [
+    {
+      name: 'app_open',
+      timestamp: dayjs().subtract(1, 'day').unix() * 1000,
+      ...app_open,
+    },
+  ])
+  await sendEventRequest(application, clients[1], [
+    { name: 'app_open', timestamp: Date.now(), ...app_open },
+  ])
+
+  const { rows } = await Events.findAll({
+    account_id,
+    limit: 1,
+  })
+
+  t.truthy(Array.isArray(rows))
+
+  rows.forEach((row) => {
+    t.truthy(row.client)
+    t.truthy(clients.includes(row.client.client_id))
+  })
+})
+
 test('findAll should paginate with limit', async (t) => {
   const port = getRandomPort()
   const { Applications, Events } = getGrpcClients(port)

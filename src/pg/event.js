@@ -74,24 +74,34 @@ export async function findAll({
 }) {
   const rows = await pg
     .queryBuilder()
-    .select('*')
-    .from('events')
-    .where({ account_id })
+    .select({
+      account_id: 'e.account_id',
+      application_id: 'e.application_id',
+      client_id: 'e.client_id',
+      title: 'e.title',
+      properties: 'e.properties',
+      session_started_at: 'e.session_started_at',
+      created_at: 'e.created_at',
+      client: pg.raw('row_to_json(c)'),
+    })
+    .from('events AS e')
+    .join('clients AS c', 'c.client_id', 'e.client_id')
+    .where('e.account_id', account_id)
     .andWhere(function () {
       if (application_id) {
-        this.where({ application_id })
+        this.where('e.application_id', application_id)
       }
 
       if (client_id) {
-        this.where({ client_id })
+        this.where('e.client_id', client_id)
       }
 
       if (start_date) {
-        this.where('created_at', '>', dayjs(start_date).toDate())
+        this.where('e.created_at', '>', dayjs(start_date).toDate())
       }
 
       if (end_date) {
-        this.where('created_at', '<=', dayjs(end_date).toDate())
+        this.where('e.created_at', '<=', dayjs(end_date).toDate())
       }
 
       if (cursor) {
@@ -101,11 +111,11 @@ export async function findAll({
           throw new Error(`Invalid cursor for pagination`)
         }
 
-        this.where('created_at', '<', dayjs(created_at).toDate())
+        this.where('e.created_at', '<', dayjs(created_at).toDate())
       }
     })
     .limit(limit)
-    .orderBy('created_at', 'desc')
+    .orderBy('e.created_at', 'desc')
 
   return {
     rows: rows.map((row) => ({
@@ -114,6 +124,14 @@ export async function findAll({
         key,
         value,
       })),
+      client: Object.assign({}, row.client, {
+        additional_properties: Object.entries(row.properties).map(
+          ([key, value]) => ({
+            key,
+            value,
+          }),
+        ),
+      }),
     })),
     cursor:
       rows.length === limit

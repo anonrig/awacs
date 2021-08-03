@@ -18,6 +18,8 @@ message Event {
   string session_started_at = 6;
   // Event creation date
   string created_at = 7;
+  // Client who initiated the event
+  Client client = 8;
 }
 
 // Find all events
