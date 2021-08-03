@@ -65,7 +65,6 @@ export function getGrpcClients(port = config.grpc_port) {
     enums: String,
     defaults: true,
     oneofs: true,
-    includeDirs: [path.join(path.resolve('.'), 'src/protofiles/awacs')],
   }
 
   const { Applications, Clients, Events, Sessions } =
