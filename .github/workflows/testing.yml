@@ -18,7 +18,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13
+        image: postgres:14
         env:
           POSTGRES_DB: tracking
           POSTGRES_PASSWORD: tracking-password
@@ -39,7 +39,7 @@ jobs:
           sudo bash -c "echo deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main >> /etc/apt/sources.list.d/pgdg.list"
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
           sudo apt-get update
-          sudo apt-get -yq install libpq-dev postgresql-client-13
+          sudo apt-get install libpq-dev postgresql-client-14
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
