@@ -49,9 +49,12 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
+      - name: Install pnpm
+        run: npm i -g pnpm
+
       - name: Prepare Database & Users
         run: |
-          npm ci
+          pnpm install
           npm run migrate
         env:
           PGDATABASE: tracking
