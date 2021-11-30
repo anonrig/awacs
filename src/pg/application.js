@@ -1,28 +1,21 @@
 import { createHash, randomUUID } from 'crypto'
+
 import grpc from '@grpc/grpc-js'
 
-import pg from './index.js'
 import { generateSigningKeys } from '../signing.js'
+
+import pg from './index.js'
 
 export function getByAuthorization({ authorization_key } = {}) {
   if (!authorization_key) {
     return Promise.reject(new Error('Missing authorization key'))
   }
 
-  return pg
-    .queryBuilder()
-    .select('*')
-    .from('applications')
-    .where({ authorization_key })
-    .first()
+  return pg.queryBuilder().select('*').from('applications').where({ authorization_key }).first()
 }
 
 export function findAll({ account_id }) {
-  return pg
-    .queryBuilder()
-    .select('*')
-    .from('applications')
-    .where({ account_id })
+  return pg.queryBuilder().select('*').from('applications').where({ account_id })
 }
 
 export function count({ account_id }) {
@@ -85,14 +78,9 @@ export function update({ account_id, application_id, ...updated_properties }) {
     .where({ account_id, application_id })
 }
 
-export async function create(
-  { account_id, application_id, title, session_timeout = 30 },
-  trx,
-) {
+export async function create({ account_id, application_id, title, session_timeout = 30 }, trx) {
   if (!trx) {
-    throw new Error(
-      `Missing transaction on Application.create. Postgresql transaction is required`,
-    )
+    throw new Error(`Missing transaction on Application.create. Postgresql transaction is required`)
   }
 
   if (session_timeout < 30) {
@@ -109,11 +97,11 @@ export async function create(
     .insert({
       account_id,
       application_id,
-      title,
-      session_timeout,
-      authorization_key,
       application_key,
+      authorization_key,
       server_key,
+      session_timeout,
+      title,
     })
     .into('applications')
     .transacting(trx)

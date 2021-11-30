@@ -1,8 +1,8 @@
-import Logger from './logger.js'
-import { build } from './server.js'
 import config from './config.js'
-import pg from './pg/index.js'
 import grpc from './grpc.js'
+import Logger from './logger.js'
+import pg from './pg/index.js'
+import { build } from './server.js'
 
 const logger = Logger.create().withScope('application').withTag('start')
 const server = await build()

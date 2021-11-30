@@ -4,8 +4,8 @@ export async function findAll(ctx) {
   const { limit, cursor } = ctx.req
 
   ctx.res = await Clients.findAll(ctx.req, {
-    limit: limit ?? 100,
     cursor,
+    limit: limit ?? 100,
   })
 }
 
@@ -20,12 +20,10 @@ export async function findOne(ctx) {
     ctx.res = {
       row: {
         ...row,
-        additional_properties: Object.entries(row.additional_properties).map(
-          ([key, value]) => ({
-            key,
-            value,
-          }),
-        ),
+        additional_properties: Object.entries(row.additional_properties).map(([key, value]) => ({
+          key,
+          value,
+        })),
       },
     }
   } else {

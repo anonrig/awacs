@@ -1,8 +1,10 @@
-import test from 'ava'
 import { randomUUID } from 'crypto'
+
+import test from 'ava'
 import dayjs from 'dayjs'
-import { getRandomPort, getGrpcClients, sendEventRequest } from '../helper.js'
+
 import { createApplication } from '../actions.js'
+import { getRandomPort, getGrpcClients, sendEventRequest } from '../helper.js'
 import { app_open } from '../seeds.js'
 
 test('should find all clients', async (t) => {
@@ -10,7 +12,7 @@ test('should find all clients', async (t) => {
   const { Applications, Clients } = getGrpcClients(port)
   const { account_id, application_id } = await createApplication(t, port)
 
-  const payload = [{ name: 'app_open', timestamp: Date.now(), ...app_open }]
+  const payload = [{ name: 'app_open', timestamp: new Date().toISOString(), ...app_open }]
   const client_id = randomUUID()
   const { row: application } = await Applications.findOne({
     account_id,
@@ -38,7 +40,7 @@ test('should count all clients', async (t) => {
     application_id,
   })
 
-  const payload = [{ name: 'app_open', timestamp: Date.now(), ...app_open }]
+  const payload = [{ name: 'app_open', timestamp: new Date().toISOString(), ...app_open }]
   const client_id = randomUUID()
 
   await sendEventRequest(application, client_id, payload)
@@ -57,14 +59,10 @@ test('should find a single client', async (t) => {
     account_id,
     application_id,
   })
-  const payload = [{ name: 'app_open', timestamp: Date.now(), ...app_open }]
+  const payload = [{ name: 'app_open', timestamp: new Date().toISOString(), ...app_open }]
   const client_id = randomUUID()
 
-  const { body, statusCode } = await sendEventRequest(
-    application,
-    client_id,
-    payload,
-  )
+  const { body, statusCode } = await sendEventRequest(application, client_id, payload)
 
   t.deepEqual(JSON.parse(body), {})
   t.is(statusCode, 200)
@@ -92,24 +90,19 @@ test('should find a client with additional properties', async (t) => {
   const payload = [
     {
       name: 'app_open',
-      timestamp: dayjs().subtract(1, 'second').unix() * 1000,
+      timestamp: dayjs().subtract(1, 'second').toISOString(),
       ...app_open,
     },
     {
-      name: 'set_client',
-      timestamp: dayjs().unix() * 1000,
       additional_properties: {
         is_additional: true,
       },
+      name: 'set_client',
+      timestamp: dayjs().toISOString(),
     },
   ]
   const client_id = randomUUID()
-
-  const { body, statusCode } = await sendEventRequest(
-    application,
-    client_id,
-    payload,
-  )
+  const { body, statusCode } = await sendEventRequest(application, client_id, payload)
 
   t.deepEqual(JSON.parse(body), {})
   t.is(statusCode, 200)
@@ -123,9 +116,7 @@ test('should find a client with additional properties', async (t) => {
   t.is(response.row.application_id, application_id)
   t.is(response.row.account_id, account_id)
   t.is(response.row.client_id, client_id)
-  t.deepEqual(response.row.additional_properties, [
-    { key: 'is_additional', value: 'true' },
-  ])
+  t.deepEqual(response.row.additional_properties, [{ key: 'is_additional', value: 'true' }])
 })
 
 test('should not find a missing client', async (t) => {

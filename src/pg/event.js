@@ -3,15 +3,7 @@ import dayjs from 'dayjs'
 import pg from './index.js'
 
 export function create(
-  {
-    account_id,
-    application_id,
-    client_id,
-    title,
-    properties,
-    created_at,
-    session_started_at,
-  },
+  { account_id, application_id, client_id, title, properties, created_at, session_started_at },
   trx,
 ) {
   return pg
@@ -20,10 +12,10 @@ export function create(
       account_id,
       application_id,
       client_id,
-      title,
-      properties,
       created_at: dayjs(created_at),
+      properties,
       session_started_at,
+      title,
     })
     .into('events')
     .transacting(trx)
@@ -31,13 +23,7 @@ export function create(
     .ignore()
 }
 
-export function count({
-  account_id,
-  application_id,
-  client_id,
-  start_date,
-  end_date,
-}) {
+export function count({ account_id, application_id, client_id, start_date, end_date }) {
   return pg
     .queryBuilder()
     .count('*', { as: 'count' })
@@ -77,12 +63,12 @@ export async function findAll({
     .select({
       account_id: 'e.account_id',
       application_id: 'e.application_id',
+      client: pg.raw('row_to_json(c)'),
       client_id: 'e.client_id',
-      title: 'e.title',
+      created_at: 'e.created_at',
       properties: 'e.properties',
       session_started_at: 'e.session_started_at',
-      created_at: 'e.created_at',
-      client: pg.raw('row_to_json(c)'),
+      title: 'e.title',
     })
     .from('events AS e')
     .join('clients AS c', 'c.client_id', 'e.client_id')
@@ -118,24 +104,19 @@ export async function findAll({
     .orderBy('e.created_at', 'desc')
 
   return {
+    cursor: rows.length === limit ? { created_at: rows[rows.length - 1].created_at } : null,
     rows: rows.map((row) => ({
       ...row,
+      client: Object.assign({}, row.client, {
+        additional_properties: Object.entries(row.properties).map(([key, value]) => ({
+          key,
+          value,
+        })),
+      }),
       properties: Object.entries(row.properties).map(([key, value]) => ({
         key,
         value,
       })),
-      client: Object.assign({}, row.client, {
-        additional_properties: Object.entries(row.properties).map(
-          ([key, value]) => ({
-            key,
-            value,
-          }),
-        ),
-      }),
     })),
-    cursor:
-      rows.length === limit
-        ? { created_at: rows[rows.length - 1].created_at }
-        : null,
   }
 }
