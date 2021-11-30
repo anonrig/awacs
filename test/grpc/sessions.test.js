@@ -1,9 +1,11 @@
-import test from 'ava'
 import { randomUUID } from 'crypto'
+
+import test from 'ava'
 import dayjs from 'dayjs'
+
+import { createApplication } from '../actions.js'
 import { getRandomPort, getGrpcClients, sendEventRequest } from '../helper.js'
 import { app_open } from '../seeds.js'
-import { createApplication } from '../actions.js'
 
 test('should find all sessions', async (t) => {
   const port = getRandomPort()
@@ -15,24 +17,20 @@ test('should find all sessions', async (t) => {
   })
   const client_id = randomUUID()
   const payload = [
-    { name: 'app_open', timestamp: dayjs().unix() * 1000, ...app_open },
+    { name: 'app_open', timestamp: dayjs().toISOString(), ...app_open },
     {
       name: 'app_open',
-      timestamp: dayjs().subtract(1, 'week').unix() * 1000,
+      timestamp: dayjs().subtract(1, 'week').toISOString(),
       ...app_open,
     },
     {
       name: 'app_open',
-      timestamp: dayjs().subtract(2, 'week').unix() * 1000,
+      timestamp: dayjs().subtract(2, 'week').toISOString(),
       ...app_open,
     },
   ]
 
-  const { body, statusCode } = await sendEventRequest(
-    application,
-    client_id,
-    payload,
-  )
+  const { body, statusCode } = await sendEventRequest(application, client_id, payload)
 
   t.deepEqual(JSON.parse(body), {})
   t.is(statusCode, 200)
@@ -61,15 +59,15 @@ test('should limit on Sessions.findAll', async (t) => {
   })
   const client_id = randomUUID()
   const payload = [
-    { name: 'app_open', timestamp: dayjs().unix() * 1000, ...app_open },
+    { name: 'app_open', timestamp: dayjs().toISOString(), ...app_open },
     {
       name: 'app_open',
-      timestamp: dayjs().subtract(1, 'week').unix() * 1000,
+      timestamp: dayjs().subtract(1, 'week').toISOString(),
       ...app_open,
     },
     {
       name: 'app_open',
-      timestamp: dayjs().subtract(2, 'week').unix() * 1000,
+      timestamp: dayjs().subtract(2, 'week').toISOString(),
       ...app_open,
     },
   ]

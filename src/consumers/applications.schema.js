@@ -1,55 +1,55 @@
 export const findAll = {
-  type: 'object',
   properties: {
-    account_id: { type: 'string', format: 'uuid' },
+    account_id: { format: 'uuid', type: 'string' },
   },
   required: ['account_id'],
+  type: 'object',
 }
 
 export const count = {
-  type: 'object',
   properties: {
-    account_id: { type: 'string', format: 'uuid' },
+    account_id: { format: 'uuid', type: 'string' },
   },
   required: ['account_id'],
+  type: 'object',
 }
 
 export const findOne = {
-  type: 'object',
   properties: {
-    account_id: { type: 'string', format: 'uuid' },
-    application_id: { type: 'string', minLength: 3 },
+    account_id: { format: 'uuid', type: 'string' },
+    application_id: { minLength: 3, type: 'string' },
   },
   required: ['account_id', 'application_id'],
+  type: 'object',
 }
 
 export const create = {
-  type: 'object',
   properties: {
-    account_id: { type: 'string', format: 'uuid' },
-    application_id: { type: 'string', minLength: 3 },
-    title: { type: 'string', minLength: 3 },
-    session_timeout: { type: 'number', minimum: 30 },
+    account_id: { format: 'uuid', type: 'string' },
+    application_id: { minLength: 3, type: 'string' },
+    session_timeout: { minimum: 30, type: 'number' },
+    title: { minLength: 3, type: 'string' },
   },
   required: ['account_id', 'application_id', 'title', 'session_timeout'],
+  type: 'object',
 }
 
 export const update = {
-  type: 'object',
   properties: {
-    account_id: { type: 'string', format: 'uuid' },
-    application_id: { type: 'string', minLength: 3 },
-    title: { type: 'string', minLength: 3 },
-    session_timeout: { type: 'number', minimum: 30 },
+    account_id: { format: 'uuid', type: 'string' },
+    application_id: { minLength: 3, type: 'string' },
+    session_timeout: { minimum: 30, type: 'number' },
+    title: { minLength: 3, type: 'string' },
   },
   required: ['account_id', 'application_id', 'title', 'session_timeout'],
+  type: 'object',
 }
 
 export const destroy = {
-  type: 'object',
   properties: {
-    account_id: { type: 'string', format: 'uuid' },
-    application_id: { type: 'string', minLength: 3 },
+    account_id: { format: 'uuid', type: 'string' },
+    application_id: { minLength: 3, type: 'string' },
   },
   required: ['account_id', 'application_id'],
+  type: 'object',
 }

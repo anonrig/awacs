@@ -7,7 +7,7 @@ export function findOne({ account_id, application_id, client_id }) {
     .queryBuilder()
     .select('*')
     .from('clients')
-    .where({ account_id, client_id, application_id })
+    .where({ account_id, application_id, client_id })
     .first()
 }
 
@@ -58,10 +58,7 @@ export function count({ account_id, application_id }) {
     .first()
 }
 
-export async function findAll(
-  { account_id, application_id },
-  { limit, cursor },
-) {
+export async function findAll({ account_id, application_id }, { limit, cursor }) {
   const rows = await pg
     .queryBuilder()
     .select('*')
@@ -86,18 +83,13 @@ export async function findAll(
     .orderBy('created_at', 'desc')
 
   return {
+    cursor: rows.length === limit ? { created_at: rows[rows.length - 1].created_at } : null,
     rows: rows.map((row) => ({
       ...row,
-      additional_properties: Object.entries(row.additional_properties).map(
-        ([key, value]) => ({
-          key,
-          value,
-        }),
-      ),
+      additional_properties: Object.entries(row.additional_properties).map(([key, value]) => ({
+        key,
+        value,
+      })),
     })),
-    cursor:
-      rows.length === limit
-        ? { created_at: rows[rows.length - 1].created_at }
-        : null,
   }
 }

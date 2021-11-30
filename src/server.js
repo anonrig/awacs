@@ -1,50 +1,52 @@
-import grpcjs from '@grpc/grpc-js'
 import { randomUUID } from 'crypto'
-import ajvCurrency from '@socketkit/ajv-currency-code'
-import ajvSemver from '@socketkit/ajv-semver'
-import ajvLocale from '@socketkit/ajv-locale-code'
-import ajvUuid from '@socketkit/ajv-uuid'
+
+import grpc from '@grpc/grpc-js'
 import ajvBase64 from '@socketkit/ajv-base64'
+import ajvCurrency from '@socketkit/ajv-currency-code'
+import ajvLocale from '@socketkit/ajv-locale-code'
+import ajvSemver from '@socketkit/ajv-semver'
+import ajvUuid from '@socketkit/ajv-uuid'
+import tracer from 'cls-rtracer'
 import f from 'fastify'
 import auth from 'fastify-auth'
-import rawBody from 'fastify-raw-body'
 import compress from 'fastify-compress'
 import cors from 'fastify-cors'
 import helmet from 'fastify-helmet'
 import metrics from 'fastify-metrics'
+import rawBody from 'fastify-raw-body'
 import sensible from 'fastify-sensible'
 import swagger from 'fastify-swagger'
-import tracer from 'cls-rtracer'
 import pressure from 'under-pressure'
 
+import config from './config.js'
 import logger from './logger.js'
-import pg from './pg/index.js'
-import routes from './routes/index.js'
 import { validateAccess, validateSignature } from './middlewares.js'
-import { add as addSchemas } from './schemas/index.js'
+import pg from './pg/index.js'
 
 import pkg from './pkg.js'
+import routes from './routes/index.js'
+import { add as addSchemas } from './schemas/index.js'
 
 export async function build() {
   const server = f({
-    trustProxy: true,
-    disableRequestLogging: true,
-    logger: false,
     ajv: {
-      customOptions: { jsonPointers: true },
+      customOptions: { allErrors: false, jsonPointers: true },
       plugins: [ajvSemver, ajvCurrency, ajvLocale, ajvUuid, ajvBase64],
     },
+    disableRequestLogging: true,
+    logger: false,
+    trustProxy: true,
   })
 
   server.setErrorHandler(async (error) => {
     if (error.code) {
       // Handle grpc related error codes.
       switch (error.code) {
-        case grpcjs.status.NOT_FOUND:
+        case grpc.status.NOT_FOUND:
           throw server.httpErrors.notFound(error.message)
-        case grpcjs.status.PERMISSION_DENIED:
+        case grpc.status.PERMISSION_DENIED:
           throw server.httpErrors.unauthorized(error.message)
-        case grpcjs.status.RESOURCE_EXHAUSTED:
+        case grpc.status.RESOURCE_EXHAUSTED:
           throw server.httpErrors.serviceUnavailable(error.message)
         default:
           logger.fatal(error)
@@ -68,50 +70,50 @@ export async function build() {
   addSchemas(server)
 
   server.register(swagger, {
-    routePrefix: '/docs',
+    exposeRoute: true,
     openapi: {
-      info: {
-        title: 'Awacs',
-        description: 'Next-gen user behavior analysis server',
-        version: pkg.version,
-      },
-      externalDocs: {
-        url: 'https://awacs.socketkit.com',
-        description: 'Awacs official documentation',
-      },
-      schemes: ['https'],
-      consumes: ['application/json'],
-      produces: ['application/json'],
       components: {
         securitySchemes: {
-          SocketkitKey: {
-            type: 'apiKey',
-            name: 'x-socketkit-key',
-            in: 'header',
-            description: 'Socketkit API Token gathered through the private API',
-          },
           ClientId: {
-            type: 'apiKey',
-            name: 'x-client-id',
-            in: 'header',
             description: 'Client id of the user',
             example: randomUUID(),
+            in: 'header',
+            name: 'x-client-id',
+            type: 'apiKey',
+          },
+          SocketkitKey: {
+            description: 'Socketkit API Token gathered through the private API',
+            in: 'header',
+            name: 'x-socketkit-key',
+            type: 'apiKey',
           },
         },
       },
+      consumes: ['application/json'],
+      externalDocs: {
+        description: 'Awacs official documentation',
+        url: 'https://awacs.socketkit.com',
+      },
+      info: {
+        description: 'Next-gen user behavior analysis server',
+        title: 'Awacs',
+        version: pkg.version,
+      },
+      produces: ['application/json'],
+      schemes: ['https'],
     },
-    exposeRoute: true,
+    routePrefix: '/docs',
   })
 
   server.register(rawBody, {
+    encoding: 'utf8',
     field: 'rawBody',
     global: false,
-    encoding: 'utf8',
     runFirst: true,
   })
   server.register(cors)
 
-  if (!process.env.CI) {
+  if (!config.isCI) {
     server.register(pressure, {
       exposeStatusRoute: {
         routeSchemaOpts: {
@@ -129,8 +131,8 @@ export async function build() {
   }
   server.register(tracer.fastifyPlugin, {
     echoHeader: true,
-    useHeader: true,
     useFastifyRequestId: true,
+    useHeader: true,
   })
   server.register(sensible, { errorHandler: false })
   server.register(compress)

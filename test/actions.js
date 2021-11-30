@@ -1,5 +1,7 @@
-import faker from 'faker'
 import { randomUUID } from 'crypto'
+
+import faker from 'faker'
+
 import { getGrpcClients } from './helper.js'
 
 /**
@@ -24,8 +26,8 @@ export async function createApplication(t, port) {
   await Applications.create({
     account_id,
     application_id,
-    title: application_title,
     session_timeout: 30,
+    title: application_title,
   })
 
   const { row: application } = await Applications.findOne({

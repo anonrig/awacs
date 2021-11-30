@@ -2,32 +2,27 @@ import dayjs from 'dayjs'
 
 import pg from './index.js'
 
-export async function findOrCreate(
-  { account_id, application_id, client_id, timestamp },
-  trx,
-) {
+export async function findOrCreate({ account_id, application_id, client_id, timestamp }, trx) {
   if (!application_id || !account_id) {
-    throw new error(`Account or application id is missing`)
+    throw new Error(`Account or application id is missing`)
   }
 
   const application = await pg
     .queryBuilder()
     .select('session_timeout')
     .from('applications')
-    .where({ application_id, account_id })
+    .where({ account_id, application_id })
     .first()
 
   if (!application) {
-    throw new Error(
-      `Application ${application_id} on account ${account_id} not found`,
-    )
+    throw new Error(`Application ${application_id} on account ${account_id} not found`)
   }
 
   const [session] = await pg
     .queryBuilder()
     .from('sessions')
     .where({ account_id, application_id, client_id })
-    .andWhereRaw(`active_period @> ?::timestamptz`, [dayjs(timestamp).toDate()])
+    .andWhereRaw(`active_period @> ?::timestamptz`, [timestamp])
     .update({
       expired_at: dayjs(timestamp)
         .add(application.session_timeout ?? 30, 'minutes')
@@ -46,10 +41,10 @@ export async function findOrCreate(
       account_id,
       application_id,
       client_id,
-      started_at: dayjs(timestamp).toDate(),
       expired_at: dayjs(timestamp)
         .add(application.session_timeout ?? 30, 'minutes')
         .toDate(),
+      started_at: dayjs(timestamp).toDate(),
     })
     .into('sessions')
     .transacting(trx)
@@ -58,13 +53,7 @@ export async function findOrCreate(
   return new_session
 }
 
-export function count({
-  account_id,
-  application_id,
-  client_id,
-  start_date,
-  end_date,
-}) {
+export function count({ account_id, application_id, client_id, start_date, end_date }) {
   return pg
     .queryBuilder()
     .count('*', { as: 'count' })
@@ -135,10 +124,7 @@ export async function findAll({
     .orderBy('expired_at', 'desc')
 
   return {
+    cursor: rows.length === limit ? { expired_at: rows[rows.length - 1].expired_at } : null,
     rows,
-    cursor:
-      rows.length === limit
-        ? { expired_at: rows[rows.length - 1].expired_at }
-        : null,
   }
 }

@@ -1,5 +1,6 @@
-import quibble from 'quibble'
 import { generateKeyPairSync } from 'crypto'
+
+import quibble from 'quibble'
 
 export async function mockPgTransaction(returns = null) {
   await quibble.esm('../src/pg.js', null, {
@@ -18,14 +19,14 @@ export async function mockApplicationGetByAuthorization(returns = null) {
 
 export async function mockSigning(returns = true) {
   await quibble.esm('../src/signing.js', {
-    validate: () => Promise.resolve(returns),
     generateSigningKeys: () => {
       const { publicKey, privateKey } = generateKeyPairSync('ed25519')
       return {
-        server_key: publicKey.export({ format: 'der', type: 'spki' }),
         application_key: privateKey.export({ format: 'der', type: 'pkcs8' }),
+        server_key: publicKey.export({ format: 'der', type: 'spki' }),
       }
     },
+    validate: () => Promise.resolve(returns),
   })
 }
 

@@ -5,10 +5,11 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "lint": "eslint \"{src,test}/**/*.js\"",
     "lint:fix": "eslint \"{src,test}/**/*.js\" --fix",
     "start": "node src/index.js",
-    "dev": "nodemon -r dotenv/config",
+    "dev": "npx nodemon -r dotenv/config",
     "test": "c8 ava --verbose",
     "test:ci": "c8 --reporter=lcov ava",
     "test:watch": "c8 ava --watch",
@@ -26,96 +27,67 @@
     }
   ],
   "dependencies": {
-    "@grpc/grpc-js": "^1.3.8",
-    "@grpc/proto-loader": "^0.6.5",
+    "@grpc/grpc-js": "^1.4.4",
+    "@grpc/proto-loader": "^0.6.7",
     "@socketkit/ajv-base64": "^1.0.1",
     "@socketkit/ajv-currency-code": "^1.0.1",
     "@socketkit/ajv-locale-code": "^1.0.1",
     "@socketkit/ajv-semver": "^1.0.1",
     "@socketkit/ajv-uuid": "^1.0.1",
-    "ajv": "^8.6.3",
+    "ajv": "^8.8.2",
     "ajv-formats": "^2.1.1",
     "cls-rtracer": "^2.6.0",
     "consola": "^2.15.3",
     "dayjs": "^1.10.7",
-    "fastify": "^3.22.0",
+    "fastify": "^3.24.1",
     "fastify-auth": "^1.1.0",
-    "fastify-compress": "^3.6.0",
+    "fastify-compress": "^3.6.1",
     "fastify-cors": "^6.0.2",
     "fastify-helmet": "^5.3.2",
     "fastify-metrics": "^8.0.0",
-    "fastify-raw-body": "^3.1.0",
-    "fastify-sensible": "^3.1.1",
-    "fastify-swagger": "^4.12.4",
-    "knex": "^0.95.11",
-    "mali": "^0.44.4",
-    "mali-ajv": "^0.3.0",
+    "fastify-raw-body": "^3.2.0",
+    "fastify-sensible": "^3.1.2",
+    "fastify-swagger": "^4.12.6",
+    "knex": "^0.95.14",
+    "mali": "^0.46.0",
+    "mali-ajv": "^0.4.0",
     "pg": "^8.7.1",
     "semver": "^7.3.5",
     "under-pressure": "^5.8.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.8",
-    "@babel/eslint-parser": "^7.15.8",
-    "@babel/plugin-syntax-top-level-await": "^7.14.5",
-    "@types/faker": "^5.5.8",
-    "ava": "^3.15.0",
-    "axios": "^0.23.0",
+    "@anonrig/eslint-config": "^0.2.1",
+    "ava": "^4.0.0-rc.1",
+    "axios": "^0.24.0",
     "c8": "^7.10.0",
     "dotenv": "^10.0.0",
-    "eslint": "^8.0.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.25.2",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-security": "^1.4.0",
+    "eslint": "^8.3.0",
     "faker": "^5.5.3",
-    "nodemon": "^2.0.13",
-    "prettier": "^2.4.1",
-    "quibble": "^0.6.5"
+    "quibble": "^0.6.6"
   },
   "eslintConfig": {
     "extends": [
-      "plugin:prettier/recommended",
-      "plugin:import/errors",
-      "plugin:import/warnings",
-      "plugin:security/recommended"
+      "@anonrig/eslint-config"
     ],
-    "plugins": [
-      "prettier",
-      "import",
-      "security"
-    ],
-    "parser": "@babel/eslint-parser",
-    "parserOptions": {
-      "sourceType": "module",
-      "ecmaFeatures": {
-        "modules": true
-      },
-      "ecmaVersion": 2021
-    },
-    "env": {
-      "node": true,
-      "es6": true
+    "rules": {
+      "ava/assertion-arguments": "off"
     }
-  },
-  "prettier": {
-    "singleQuote": true,
-    "trailingComma": "all",
-    "semi": false,
-    "tabWidth": 2
   },
   "ava": {
     "files": [
       "test/**/*.test.js"
     ],
+    "cache": true,
     "failFast": true,
-    "environmentVariables": {
-      "CI": "true"
-    },
+    "failWithoutAssertions": true,
+    "require": [
+      "dotenv/config"
+    ],
     "nodeArguments": [
       "--loader=quibble",
-      "--no-warnings",
-      "--require=dotenv/config"
-    ]
+      "--no-warnings"
+    ],
+    "verbose": false,
+    "workerThreads": true
   }
 }

@@ -38,22 +38,14 @@ export async function validateSignature(request, reply) {
   const signature = request.headers['x-signature']
 
   if (!signature) {
-    return reply.internalServerError(
-      'Signature is not available for signature validation',
-    )
+    return reply.internalServerError('Signature is not available for signature validation')
   }
 
   if (!request.application) {
-    return reply.internalServerError(
-      'Application is not available for signature validation',
-    )
+    return reply.internalServerError('Application is not available for signature validation')
   }
 
-  const isValid = await Signing.validate(
-    request.rawBody,
-    request.application.server_key,
-    signature,
-  )
+  const isValid = await Signing.validate(request.rawBody, request.application.server_key, signature)
 
   if (!isValid) {
     return reply.expectationFailed('Application signature does not match')

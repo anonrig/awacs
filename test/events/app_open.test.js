@@ -1,289 +1,35 @@
+import { randomUUID } from 'crypto'
+
 import test from 'ava'
-import { build } from '../../src/server.js'
 
-test('should check for locale', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [{ name: 'app_open', timestamp: Date.now() }],
+import { createApplication } from '../actions.js'
+import { getRandomPort, getGrpcClients, sendEventRequest } from '../helper.js'
+import { app_open } from '../seeds.js'
+
+test('should accept first_app_open requests', async (t) => {
+  const port = getRandomPort()
+  const { Applications, Events } = getGrpcClients(port)
+  const { application_id, account_id } = await createApplication(t, port)
+  const { row: application } = await Applications.findOne({
+    account_id,
+    application_id,
   })
-  const response = JSON.parse(body)
+  const client_id = randomUUID()
+  const payload = [{ name: 'app_open', timestamp: new Date().toISOString(), ...app_open }]
 
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(`should have required property 'locale'`),
-    response.message,
-  )
-})
+  await sendEventRequest(application, client_id, payload)
 
-test('should validate for locale', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [{ name: 'app_open', timestamp: Date.now(), locale: 'HELLO' }],
+  const events = await Events.findAll({
+    account_id,
+    application_id: application.application_id,
+    client_id,
   })
-  const response = JSON.parse(body)
 
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(`should match format "locale_code"`),
-    response.message,
-  )
-})
-
-test('should check for platform', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'app_open',
-        timestamp: Date.now(),
-        locale: 'en-US',
-        manufacturer: 'Apple',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(`should have required property 'platform'`),
-    response.message,
-  )
-})
-
-test('should check for manufacturer', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'app_open',
-        timestamp: Date.now(),
-        platform: 'ios',
-        locale: 'en-US',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(`should have required property 'manufacturer'`),
-    response.message,
-  )
-})
-
-test('should check for type', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'app_open',
-        timestamp: Date.now(),
-        platform: 'ios',
-        manufacturer: 'Apple',
-        locale: 'en-US',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(`should have required property 'type'`),
-    response.message,
-  )
-})
-
-test('should check for os_name', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'app_open',
-        timestamp: Date.now(),
-        platform: 'ios',
-        manufacturer: 'Apple',
-        type: 'iPad13,1',
-        carrier: 'T-Mobile',
-        locale: 'en-US',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(response.message.includes(`should have required property 'os_name'`))
-})
-
-test('should check for screen_size', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'app_open',
-        timestamp: Date.now(),
-        platform: 'ios',
-        manufacturer: 'Apple',
-        type: 'iPad13,1',
-        carrier: 'T-Mobile',
-        os_name: 'iOS',
-        os_version: '14.4.1',
-        locale: 'en-US',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(`should have required property 'screen_size'`),
-    response.message,
-  )
-})
-
-test('should check for os_version', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'app_open',
-        timestamp: Date.now(),
-        platform: 'ios',
-        manufacturer: 'Apple',
-        type: 'iPad13,1',
-        carrier: 'T-Mobile',
-        os_name: 'iOS',
-        locale: 'en-US',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(`should have required property 'os_version'`),
-    response.message,
-  )
-})
-
-test('should check for application_build_number', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'app_open',
-        timestamp: Date.now(),
-        platform: 'ios',
-        manufacturer: 'Apple',
-        type: 'iPad13,1',
-        carrier: 'T-Mobile',
-        os_version: '1.0.0',
-        os_name: 'iOS',
-        screen_size: [1080, 640],
-        locale: 'en-US',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(
-      `should have required property 'application_build_number'`,
-    ),
-    response.message,
-  )
-})
-
-test('should check for application_version', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'app_open',
-        timestamp: Date.now(),
-        platform: 'ios',
-        manufacturer: 'Apple',
-        type: 'iPad13,1',
-        carrier: 'T-Mobile',
-        os_version: '1.0.0',
-        os_name: 'iOS',
-        application_build_number: 1,
-        screen_size: [1080, 640],
-        locale: 'en-US',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(
-      `should have required property 'application_version'`,
-    ),
-    response.message,
-  )
-})
-
-test('should check for library_version', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'app_open',
-        timestamp: Date.now(),
-        platform: 'ios',
-        manufacturer: 'Apple',
-        type: 'iPad13,1',
-        carrier: 'T-Mobile',
-        os_version: '1.0.0',
-        os_name: 'iOS',
-        application_build_number: 1,
-        application_version: '1.0.0',
-        screen_size: [1080, 640],
-        locale: 'en-US',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(
-      `should have required property 'library_version'`,
-    ),
-    response.message,
-  )
+  t.falsy(events.cursor)
+  t.truthy(events.rows)
+  t.is(events.rows.length, 1)
+  t.is(events.rows[0].account_id, account_id)
+  t.is(events.rows[0].application_id, application.application_id)
+  t.is(events.rows[0].title, 'first_app_open')
+  t.is(events.rows[0].client_id, client_id)
 })

@@ -1,9 +1,11 @@
-import test from 'ava'
 import { randomUUID } from 'crypto'
+
+import test from 'ava'
+
 import * as Signing from '../src/signing.js'
 
 test('should sign', async (t) => {
-  const { server_key, application_key } = await Signing.generateSigningKeys()
+  const { application_key } = await Signing.generateSigningKeys()
   const signed = await Signing.sign('hello-world', application_key)
   t.truthy(signed)
 })

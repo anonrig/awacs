@@ -1,35 +1,35 @@
 export const findAll = {
-  type: 'object',
   properties: {
-    account_id: { type: 'string', format: 'uuid' },
-    limit: { type: 'number' },
+    account_id: { format: 'uuid', type: 'string' },
     application_id: { type: 'string' },
     cursor: {
-      type: 'object',
       properties: {
         created_at: { type: 'string' },
       },
       required: ['created_at'],
+      type: 'object',
     },
+    limit: { type: 'number' },
   },
   required: ['account_id'],
+  type: 'object',
 }
 
 export const count = {
-  type: 'object',
   properties: {
-    account_id: { type: 'string', format: 'uuid' },
+    account_id: { format: 'uuid', type: 'string' },
     application_id: { type: 'string' },
   },
   required: ['account_id'],
+  type: 'object',
 }
 
 export const findOne = {
-  type: 'object',
   properties: {
-    account_id: { type: 'string', format: 'uuid' },
+    account_id: { format: 'uuid', type: 'string' },
     application_id: { type: 'string' },
-    client_id: { type: 'string', format: 'uuid' },
+    client_id: { format: 'uuid', type: 'string' },
   },
   required: ['account_id', 'application_id', 'client_id'],
+  type: 'object',
 }

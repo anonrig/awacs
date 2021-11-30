@@ -16,3 +16,7 @@ docs/sidebars-protodoc.js
 docs/static/proto_workspace.json
 docs/docs/proto
 docs/.vercel
+
+# We use PNPM for package dependencies.
+package-lock.json
+yarn.lock

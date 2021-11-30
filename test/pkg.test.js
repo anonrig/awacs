@@ -1,4 +1,5 @@
 import test from 'ava'
+
 import pkg from '../src/pkg.js'
 
 test('pkg should return valid package information', (t) => {

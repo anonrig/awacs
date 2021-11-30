@@ -1,7 +1,8 @@
 FROM mhart/alpine-node:16
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --prod
+COPY package.json pnpm-lock.yaml ./
+RUN npm install pnpm -g
+RUN pnpm install
 
 FROM mhart/alpine-node:slim-16
 WORKDIR /app

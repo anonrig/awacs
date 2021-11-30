@@ -2,65 +2,62 @@ import { randomUUID } from 'crypto'
 
 export const app_open = {
   $id: 'app_open_event',
-  type: 'object',
-  title: 'app_open',
-  description:
-    'App open event. Includes all necessary information regarding the device and user',
+  description: 'App open event. Includes all necessary information regarding the device and user',
   properties: {
-    name: {
+    application_build_number: { example: 14, type: 'number' },
+    application_version: {
+      example: '1.0.0',
+      format: 'semver',
       type: 'string',
+    },
+    carrier: { example: 'T-Mobile', type: 'string' },
+    library_version: {
+      example: '0.4.1',
+      format: 'semver',
+      type: 'string',
+    },
+    locale: { example: 'en-US', format: 'locale_code', type: 'string' },
+    manufacturer: { example: 'Apple', type: 'string' },
+    name: {
       description: 'Name of the event',
       enum: ['app_open'],
-    },
-    timestamp: {
-      type: 'integer',
-      description: 'Unix timestamp of the event',
-      example: Date.now(),
-    },
-    locale: { type: 'string', format: 'locale_code', example: 'en-US' },
-    manufacturer: { type: 'string', example: 'Apple' },
-    platform: {
       type: 'string',
-      enum: ['ios', 'android'],
-      example: 'ios',
     },
-    type: { type: 'string', example: 'iPad13,1' },
-    carrier: { type: 'string', example: 'T-Mobile' },
     os_name: {
-      type: 'string',
-      example: 'iOS',
       description: 'Changes according to platform and device type',
+      example: 'iOS',
+      type: 'string',
     },
     os_version: {
-      type: 'string',
-      format: 'semver',
       example: '14.4.1',
+      format: 'semver',
+      type: 'string',
+    },
+    platform: {
+      enum: ['ios', 'android'],
+      example: 'ios',
+      type: 'string',
     },
     screen_size: {
-      type: 'array',
+      description: 'Screen size expected format is [height, width]',
+      example: [2778, 1284],
       items: {
-        type: 'integer',
+        type: 'string',
       },
       maxItems: 2,
       minItems: 2,
-      example: [2778, 1284],
-      description: 'Screen size expected format is [height, width]',
+      type: 'array',
     },
-    application_build_number: { type: 'number', example: 14 },
-    application_version: {
+    timestamp: {
+      description: 'Unix timestamp of the event',
+      example: `${Date.now()}`,
       type: 'string',
-      format: 'semver',
-      example: '1.0.0',
     },
-    library_version: {
-      type: 'string',
-      format: 'semver',
-      example: '0.4.1',
-    },
+    type: { example: 'iPad13,1', type: 'string' },
     watch_model: {
-      type: 'string',
-      example: 'Apple Watch 38mm',
       description: 'Only used by watch applications',
+      example: 'Apple Watch 38mm',
+      type: 'string',
     },
   },
   required: [
@@ -77,75 +74,75 @@ export const app_open = {
     'application_version',
     'library_version',
   ],
+  title: 'app_open',
+  type: 'object',
 }
 
 export const app_updated = {
   $id: 'app_updated_event',
-  type: 'object',
-  title: 'app_updated',
   description: 'App Updated Event',
   properties: {
     name: {
-      type: 'string',
       description: 'Name of the event',
       enum: ['app_updated'],
+      type: 'string',
     },
+    new_version: { example: '1.1.0', format: 'semver', type: 'string' },
+    old_version: { example: '1.0.0', format: 'semver', type: 'string' },
     timestamp: {
-      type: 'integer',
       description: 'Unix timestamp of the event',
-      example: Date.now(),
+      example: `${Date.now()}`,
+      type: 'string',
     },
-    new_version: { type: 'string', format: 'semver', example: '1.1.0' },
-    old_version: { type: 'string', format: 'semver', example: '1.0.0' },
   },
   required: ['name', 'timestamp', 'new_version', 'old_version'],
+  title: 'app_updated',
+  type: 'object',
 }
 
 export const os_updated = {
   $id: 'os_updated_event',
-  type: 'object',
-  title: 'os_updated',
   description: 'OS Updated Event',
   properties: {
     name: {
-      type: 'string',
       description: 'Name of the event',
       enum: ['os_updated'],
+      type: 'string',
     },
+    new_version: { example: '14.4.1', format: 'semver', type: 'string' },
+    old_version: { example: '14.4.0', format: 'semver', type: 'string' },
     timestamp: {
-      type: 'integer',
       description: 'Unix timestamp of the event',
-      example: Date.now(),
+      example: `${Date.now()}`,
+      type: 'string',
     },
-    new_version: { type: 'string', format: 'semver', example: '14.4.1' },
-    old_version: { type: 'string', format: 'semver', example: '14.4.0' },
   },
   required: ['name', 'timestamp', 'new_version', 'old_version'],
+  title: 'os_updated',
+  type: 'object',
 }
 
 export const in_app_purchase = {
   $id: 'in_app_purchase_event',
-  type: 'object',
-  title: 'in_app_purchase',
   description: 'In App Purchase Event',
   properties: {
     name: {
-      type: 'string',
       description: 'Name of the event',
       enum: ['in_app_purchase'],
-    },
-    timestamp: {
       type: 'string',
-      description: 'Unix timestamp of the event',
-      example: Date.now(),
     },
-    product_name: { type: 'string', example: 'Weekly Package' },
-    product_quantity: { type: 'number', example: 1 },
-    product_price: { type: 'number', example: 4.99 },
     product_currency: {
-      type: 'string',
-      format: 'currency_code',
       example: 'USD',
+      format: 'currency_code',
+      type: 'string',
+    },
+    product_name: { example: 'Weekly Package', type: 'string' },
+    product_price: { example: 4.99, type: 'number' },
+    product_quantity: { example: 1, type: 'number' },
+    timestamp: {
+      description: 'Unix timestamp of the event',
+      example: `${Date.now()}`,
+      type: 'string',
     },
   },
   required: [
@@ -156,58 +153,60 @@ export const in_app_purchase = {
     'product_price',
     'product_currency',
   ],
+  title: 'in_app_purchase',
+  type: 'object',
 }
 
 export const set_client = {
   $id: 'set_client_event',
-  type: 'object',
-  title: 'set_client',
   description: 'Set Client Properties Event',
   properties: {
-    name: {
-      type: 'string',
-      description: 'Name of the event',
-      enum: ['set_client'],
-    },
-    timestamp: {
-      type: 'integer',
-      description: 'Unix timestamp of the event',
-      example: Date.now(),
-    },
-    distinct_id: { type: 'string', example: randomUUID() },
-    referer: { type: 'string', example: 'Google Ads' },
-    push_token: { type: 'string', example: randomUUID() },
-    is_opt_out: { type: 'boolean', example: false },
     additional_properties: {
-      type: 'object',
-      properties: {},
       additionalProperties: true,
       example: {
         firstName: 'Yagiz',
         lastName: 'Nizipli',
       },
       minProperties: 1,
+      properties: {},
+      type: 'object',
+    },
+    distinct_id: { example: randomUUID(), type: 'string' },
+    is_opt_out: { example: false, type: 'boolean' },
+    name: {
+      description: 'Name of the event',
+      enum: ['set_client'],
+      type: 'string',
+    },
+    push_token: { example: randomUUID(), type: 'string' },
+    referer: { example: 'Google Ads', type: 'string' },
+    timestamp: {
+      description: 'Unix timestamp of the event',
+      example: `${Date.now()}`,
+      type: 'string',
     },
   },
   required: ['name', 'timestamp'],
+  title: 'set_client',
+  type: 'object',
 }
 
 export const custom = {
   $id: 'custom_event',
-  type: 'object',
-  title: 'custom',
+  additionalProperties: true,
   properties: {
     name: {
-      type: 'string',
       description: 'Name of the event',
       enum: ['custom'],
+      type: 'string',
     },
     timestamp: {
-      type: 'integer',
       description: 'Unix timestamp of the event',
-      example: Date.now(),
+      example: `${Date.now()}`,
+      type: 'string',
     },
   },
-  additionalProperties: true,
   required: ['name', 'timestamp'],
+  title: 'custom',
+  type: 'object',
 }

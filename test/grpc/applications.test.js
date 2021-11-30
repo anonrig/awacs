@@ -1,6 +1,7 @@
 import test from 'ava'
-import { getRandomPort, getGrpcClients } from '../helper.js'
+
 import { createApplication } from '../actions.js'
+import { getRandomPort, getGrpcClients } from '../helper.js'
 
 test('should create an application', async (t) => {
   t.truthy(await createApplication(t, getRandomPort()))
@@ -10,8 +11,7 @@ test('should find all applications', async (t) => {
   const port = getRandomPort()
   const { Applications } = getGrpcClients(port)
 
-  const { account_id, application_id, application_title } =
-    await createApplication(t, port)
+  const { account_id, application_id, application_title } = await createApplication(t, port)
 
   const response = await Applications.findAll({ account_id })
 
@@ -39,8 +39,7 @@ test('should count all applications', async (t) => {
 test('should find one application', async (t) => {
   const port = getRandomPort()
   const { Applications } = getGrpcClients(port)
-  const { account_id, application_id, application_title } =
-    await createApplication(t, port)
+  const { account_id, application_id, application_title } = await createApplication(t, port)
   const { row: application } = await Applications.findOne({
     account_id,
     application_id,
@@ -60,8 +59,8 @@ test('should update an application', async (t) => {
   await Applications.update({
     account_id,
     application_id,
-    title: 'Updated title',
     session_timeout: 50,
+    title: 'Updated title',
   })
 
   const { row: application } = await Applications.findOne({

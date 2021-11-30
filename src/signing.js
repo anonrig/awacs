@@ -41,7 +41,7 @@ export async function sign(body, application_key) {
 export async function generateSigningKeys() {
   const { publicKey, privateKey } = Crypto.generateKeyPairSync('ed25519')
   return {
-    server_key: publicKey.export({ format: 'der', type: 'spki' }),
     application_key: privateKey.export({ format: 'der', type: 'pkcs8' }),
+    server_key: publicKey.export({ format: 'der', type: 'spki' }),
   }
 }

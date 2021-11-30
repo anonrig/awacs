@@ -1,121 +1,48 @@
+import { randomUUID } from 'crypto'
+
 import test from 'ava'
-import { build } from '../../src/server.js'
+import dayjs from 'dayjs'
 
-test('should check for product_name', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [{ name: 'in_app_purchase', timestamp: Date.now() }],
+import { createApplication } from '../actions.js'
+import { getRandomPort, getGrpcClients, sendEventRequest } from '../helper.js'
+import { app_open } from '../seeds.js'
+
+test('should accept in_app_purchase requests', async (t) => {
+  const port = getRandomPort()
+  const { Applications, Events } = getGrpcClients(port)
+  const { application_id, account_id } = await createApplication(t, port)
+  const { row: application } = await Applications.findOne({
+    account_id,
+    application_id,
   })
-  const response = JSON.parse(body)
+  const client_id = randomUUID()
+  const payload = [
+    {
+      name: 'app_open',
+      timestamp: dayjs().subtract(1, 'days').toISOString(),
+      ...app_open,
+    },
+    {
+      name: 'in_app_purchase',
+      product_currency: 'USD',
+      product_name: 'Weekly Package',
+      product_price: 4.99,
+      product_quantity: 1,
+      timestamp: dayjs().subtract(12, 'hours').toISOString(),
+    },
+  ]
 
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(`should have required property 'product_name'`),
-    response.message,
-  )
-})
+  const request_response = await sendEventRequest(application, client_id, payload)
+  t.not(request_response, 500, `Request should not fail but got ${request_response.body}`)
 
-test('should check for product_quantity', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'in_app_purchase',
-        timestamp: Date.now(),
-        product_name: 'Weekly package',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
+  const events = await Events.findAll({ account_id, client_id })
+  const event = events.rows.find((r) => r.title === 'in_app_purchase')
 
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(
-      `should have required property 'product_quantity'`,
-    ),
-    response.message,
-  )
-})
-
-test('should check for product_price', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'in_app_purchase',
-        timestamp: Date.now(),
-        product_name: 'Weekly package',
-        product_quantity: 1,
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(`should have required property 'product_price'`),
-    response.message,
-  )
-})
-
-test('should check for product_currency', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'in_app_purchase',
-        timestamp: Date.now(),
-        product_name: 'Weekly package',
-        product_quantity: 1,
-        product_price: 14.99,
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(
-      `should have required property 'product_currency'`,
-    ),
-    response.message,
-  )
-})
-
-test('validate product_currency', async (t) => {
-  const server = await build()
-  const { statusCode, body } = await server.inject({
-    method: 'POST',
-    url: '/v1/events',
-    payload: [
-      {
-        name: 'in_app_purchase',
-        timestamp: Date.now(),
-        product_name: 'Weekly package',
-        product_quantity: 1,
-        product_price: 14.99,
-        product_currency: 'HELLO',
-      },
-    ],
-  })
-  const response = JSON.parse(body)
-
-  t.is(statusCode, 400)
-  t.is(response.error, 'Bad Request')
-  t.truthy(
-    response.message.includes(`should match format "currency_code"`),
-    response.message,
-  )
+  t.truthy(event)
+  t.deepEqual(event.properties, [
+    { key: 'product_name', value: 'Weekly Package' },
+    { key: 'product_price', value: '4.99' },
+    { key: 'product_currency', value: 'USD' },
+    { key: 'product_quantity', value: '1' },
+  ])
 })
