@@ -11,6 +11,10 @@ export function getByAuthorization({ authorization_key } = {}) {
     return Promise.reject(new Error('Missing authorization key'))
   }
 
+  if (!Buffer.isBuffer(authorization_key)) {
+    return Promise.reject(new Error(`Authorization key is not a buffer`))
+  }
+
   return pg.queryBuilder().select('*').from('applications').where({ authorization_key }).first()
 }
 
@@ -89,7 +93,7 @@ export async function create({ account_id, application_id, title, session_timeou
     throw error
   }
 
-  const { application_key, server_key } = await generateSigningKeys()
+  const { application_key } = await generateSigningKeys()
   const authorization_key = generateAuthorizationKey()
 
   const [application] = await pg
@@ -99,7 +103,6 @@ export async function create({ account_id, application_id, title, session_timeou
       application_id,
       application_key,
       authorization_key,
-      server_key,
       session_timeout,
       title,
     })

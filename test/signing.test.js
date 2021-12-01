@@ -29,10 +29,10 @@ test('should validate body on sign', async (t) => {
 })
 
 test('should validate', async (t) => {
-  const { server_key, application_key } = await Signing.generateSigningKeys()
+  const { application_key } = await Signing.generateSigningKeys()
   const plain = randomUUID()
   const signed = await Signing.sign(plain, application_key)
-  const valid = await Signing.validate(plain, server_key, signed)
+  const valid = await Signing.validate(plain, application_key, signed)
   t.is(valid, true)
 })
 

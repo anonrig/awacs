@@ -1,7 +1,6 @@
 /* c8 ignore start */
 import { PerformanceObserver, performance } from 'perf_hooks'
 
-import config from './config.js'
 import Logger from './logger.js'
 
 const logger = Logger.create().withScope('grpc')

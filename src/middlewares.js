@@ -45,7 +45,11 @@ export async function validateSignature(request, reply) {
     return reply.internalServerError('Application is not available for signature validation')
   }
 
-  const isValid = await Signing.validate(request.rawBody, request.application.server_key, signature)
+  const isValid = await Signing.validate(
+    request.rawBody,
+    request.application.application_key,
+    signature,
+  )
 
   if (!isValid) {
     return reply.expectationFailed('Application signature does not match')
