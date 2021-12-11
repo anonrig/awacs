@@ -1,0 +1,19 @@
+apiVersion: v1
+entries:
+  awacs:
+  - apiVersion: v2
+    appVersion: 0.5.0
+    created: "2021-12-11T21:24:26.838617Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.5.0
+    description: A Helm chart for Socketkit Awacs
+    digest: c21fc66fe643bf68960d088bf51c69fe1813aaa81a032a86b42d02be4f770767
+    name: awacs
+    type: application
+    urls:
+    - https://charts.socketkit.com/awacs-0.2.0.tgz
+    version: 0.2.0
+generated: "2021-12-11T21:24:26.833777165Z"
