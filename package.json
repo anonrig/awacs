@@ -39,7 +39,7 @@
     "cls-rtracer": "^2.6.0",
     "consola": "^2.15.3",
     "dayjs": "^1.10.7",
-    "fastify": "^3.24.1",
+    "fastify": "^3.29.4",
     "fastify-auth": "^1.1.0",
     "fastify-compress": "^3.6.1",
     "fastify-cors": "^6.0.2",
